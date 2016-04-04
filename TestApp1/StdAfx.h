@@ -14,18 +14,34 @@
 
 using namespace DuiLib;
 
-#ifdef _DEBUG
-#   ifdef _UNICODE
-#       pragma comment(lib, "..\\Lib\\DuiLib_ud.lib")
-#   else
-#       pragma comment(lib, "..\\Lib\\DuiLib_d.lib")
-#   endif
+#ifdef _WIN64
+    #ifdef _DEBUG
+        #ifdef _UNICODE
+            #pragma comment(lib, "..\\Lib\\DuiLib_ud_x64.lib")
+        #else
+            #pragma comment(lib, "..\\Lib\\DuiLib_d_x64.lib")
+        #endif
+    #else
+        #ifdef _UNICODE
+        #pragma comment(lib, "..\\Lib\\DuiLib_u_x64.lib")
+        #else
+        #pragma comment(lib, "..\\Lib\\DuiLib_x64.lib")
+        #endif
+    #endif
 #else
-#   ifdef _UNICODE
-#       pragma comment(lib, "..\\Lib\\DuiLib_u.lib")
-#   else
-#       pragma comment(lib, "..\\Lib\\DuiLib.lib")
-#   endif
+    #ifdef _DEBUG
+        #ifdef _UNICODE
+            #pragma comment(lib, "..\\Lib\\DuiLib_ud.lib")
+        #else
+            #pragma comment(lib, "..\\Lib\\DuiLib_d.lib")
+        #endif
+    #else
+        #ifdef _UNICODE
+        #pragma comment(lib, "..\\Lib\\DuiLib_u.lib")
+        #else
+        #pragma comment(lib, "..\\Lib\\DuiLib.lib")
+        #endif
+    #endif
 #endif
 
 

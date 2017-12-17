@@ -320,9 +320,9 @@ public:
 
     CDuiString GetWindowXML();
 
-	static void AddMultiLanguageString(int id, LPCTSTR pStrMultiLanguage);
-	static LPCTSTR GetMultiLanguageString(int id);
-	static bool RemoveMultiLanguageString(int id);
+	static void AddMultiLanguageString(LPCTSTR pStrId, LPCTSTR pStrMultiLanguage);
+	static LPCTSTR GetMultiLanguageString(LPCTSTR pstrId);
+	static bool RemoveMultiLanguageString(LPCTSTR pstrId);
 	static void RemoveAllMultiLanguageString();
 	static void ProcessMultiLanguageTokens(CDuiString& pStrMultiLanguage);
 

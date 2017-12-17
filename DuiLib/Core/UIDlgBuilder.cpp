@@ -180,20 +180,20 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
             }
 			else if( _tcsicmp(pstrClass, _T("MultiLanguage")) == 0 ) {
 				nAttributes = node.GetAttributeCount();
-				int id = -1;
+                LPCTSTR pstrId = NULL;
 				LPCTSTR pMultiLanguage = NULL;
 				for( int i = 0; i < nAttributes; i++ ) {
 					pstrName = node.GetAttributeName(i);
 					pstrValue = node.GetAttributeValue(i);
 					if( _tcsicmp(pstrName, _T("id")) == 0 ) {
-						id = _tcstol(pstrValue, &pstr, 10);
+						pstrId = pstrValue;
 					}
 					else if( _tcsicmp(pstrName, _T("value")) == 0 ) {
 						pMultiLanguage = pstrValue;
 					}
 				}
-				if (id >= 0 && pMultiLanguage ) {
-					pManager->AddMultiLanguageString(id, pMultiLanguage);
+				if (pstrId && pMultiLanguage ) {
+					pManager->AddMultiLanguageString(pstrId, pMultiLanguage);
 				}
 			}
         }

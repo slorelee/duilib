@@ -195,6 +195,8 @@ public:
 
 public:
     void Init(HWND hWnd, LPCTSTR pstrName = NULL);
+    bool GetKeepRes();
+    void SetKeepRes(bool bKeep);
 	bool IsUpdateNeeded() const;
     void NeedUpdate();
 	void Invalidate();
@@ -432,6 +434,7 @@ private:
 	int m_iHoverTime;
     bool m_bNoActivate;
     bool m_bShowUpdateRect;
+    bool m_bKeepRes;
     //
     CControlUI* m_pRoot;
     CControlUI* m_pFocus;

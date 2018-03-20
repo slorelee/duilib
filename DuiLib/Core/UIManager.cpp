@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include <zmouse.h>
 #include <stdlib.h>
+#include "UIManager.h"
 
 DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
 typedef DWORD ZRESULT;
@@ -105,6 +106,7 @@ m_hwndTooltip(NULL),
 m_iHoverTime(1000),
 m_bNoActivate(false),
 m_bShowUpdateRect(false),
+m_bKeepRes(false),
 m_uTimerID(0x1000),
 m_pRoot(NULL),
 m_pFocus(NULL),
@@ -210,10 +212,12 @@ void CPaintManagerUI::Init(HWND hWnd, LPCTSTR pstrName)
 	ASSERT(::IsWindow(hWnd));
 
 	m_mNameHash.Resize();
-	RemoveAllFonts();
-	RemoveAllImages();
-	RemoveAllDefaultAttributeList();
-	RemoveAllWindowCustomAttribute();
+	if (!m_bKeepRes) {
+		RemoveAllFonts();
+		RemoveAllImages();
+		RemoveAllDefaultAttributeList();
+		RemoveAllWindowCustomAttribute();
+	}
 	RemoveAllOptionGroups();
 	RemoveAllTimers();
 
@@ -225,6 +229,16 @@ void CPaintManagerUI::Init(HWND hWnd, LPCTSTR pstrName)
 		m_hDcPaint = ::GetDC(hWnd);
 		m_aPreMessages.Add(this);
 	}
+}
+
+bool CPaintManagerUI::GetKeepRes()
+{
+	return m_bKeepRes;
+}
+
+void CPaintManagerUI::SetKeepRes(bool bKeep)
+{
+	m_bKeepRes = bKeep;
 }
 
 HINSTANCE CPaintManagerUI::GetInstance()

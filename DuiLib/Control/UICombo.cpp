@@ -582,7 +582,8 @@ void CComboUI::RemoveAll()
 
 void CComboUI::DoEvent(TEventUI& event)
 {
-    if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
+    if ( (!IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND) ||
+           (!IsWheelEnabled() && event.Type == UIEVENT_SCROLLWHEEL) ) {
         if( m_pParent != NULL ) m_pParent->DoEvent(event);
         else CContainerUI::DoEvent(event);
         return;

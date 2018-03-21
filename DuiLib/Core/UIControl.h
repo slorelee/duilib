@@ -122,6 +122,8 @@ public:
     virtual void SetEnabled(bool bEnable = true);
     virtual bool IsMouseEnabled() const;
     virtual void SetMouseEnabled(bool bEnable = true);
+    virtual bool IsWheelEnabled() const;
+    virtual void SetWheelEnabled(bool bEnable = true);
     virtual bool IsKeyboardEnabled() const;
     virtual void SetKeyboardEnabled(bool bEnable = true);
     virtual bool IsFocused() const;
@@ -199,6 +201,7 @@ protected:
     bool m_bInternVisible;
     bool m_bEnabled;
     bool m_bMouseEnabled;
+    bool m_bWheelEnabled;
 	bool m_bKeyboardEnabled ;
     bool m_bFocused;
     bool m_bFloat;

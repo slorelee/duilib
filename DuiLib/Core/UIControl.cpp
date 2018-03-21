@@ -1,4 +1,5 @@
 ﻿#include "StdAfx.h"
+#include "UIControl.h"
 
 namespace DuiLib {
 
@@ -14,6 +15,7 @@ m_bInternVisible(true),
 m_bFocused(false),
 m_bEnabled(true),
 m_bMouseEnabled(true),
+m_bWheelEnabled(true),
 m_bKeyboardEnabled(true),
 m_bFloat(false),
 m_bSetPos(false),
@@ -658,6 +660,16 @@ void CControlUI::SetMouseEnabled(bool bEnabled)
     m_bMouseEnabled = bEnabled;
 }
 
+bool CControlUI::IsWheelEnabled() const
+{
+    return m_bWheelEnabled;
+}
+
+void CControlUI::SetWheelEnabled(bool bEnable)
+{
+    m_bWheelEnabled = bEnable;
+}
+
 bool CControlUI::IsKeyboardEnabled() const
 {
 	return m_bKeyboardEnabled ;
@@ -987,6 +999,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("tag")) == 0 ) SetTag(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("enabled")) == 0 ) SetEnabled(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("mouse")) == 0 ) SetMouseEnabled(_tcscmp(pstrValue, _T("true")) == 0);
+    else if (_tcscmp(pstrName, _T("wheel")) == 0) SetWheelEnabled(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("keyboard")) == 0 ) SetKeyboardEnabled(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("visible")) == 0 ) SetVisible(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("float")) == 0 ) {

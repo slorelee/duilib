@@ -28,7 +28,7 @@ namespace DuiLib
 		void SetThumbHotImage(LPCTSTR pStrImage);
 		LPCTSTR GetThumbPushedImage() const;
 		void SetThumbPushedImage(LPCTSTR pStrImage);
-
+        UINT GetButtonState() { return m_uButtonState; }
 		void DoEvent(TEventUI& event);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		void PaintStatusImage(HDC hDC);

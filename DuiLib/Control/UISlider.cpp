@@ -146,6 +146,7 @@ namespace DuiLib
 				if (m_nValue != nValue && nValue >= m_nMin && nValue <= m_nMax)
 				{
 					m_nValue = nValue;
+                    if (m_bImmMode) m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
 					Invalidate();
 				}
 			}
@@ -154,6 +155,10 @@ namespace DuiLib
 		if( event.Type == UIEVENT_BUTTONUP )
 		{
 			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
+                if (m_bImmMode) {
+                    m_uButtonState &= ~UISTATE_CAPTURED;
+                    return;
+                }
 				if( m_bHorizontal ) {
 					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) m_nValue = m_nMax;
 					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) m_nValue = m_nMin;

@@ -4442,4 +4442,11 @@ bool IsZipHandleU(HZIP hz)
   return (han->flag==1);
 }
 
+bool SetZipRootDirU(HZIP hz, TCHAR *dir)
+{
+    if (hz == 0) return true;
+    TUnzipHandleData *han = (TUnzipHandleData*)hz;
+    _sntprintf(han->unz->rootdir, MAX_PATH, _T("%s"), dir);
+    return true;
+}
 

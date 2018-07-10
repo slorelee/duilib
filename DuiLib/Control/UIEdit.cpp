@@ -373,6 +373,11 @@ namespace DuiLib
 		CLabelUI::DoEvent(event);
 	}
 
+	bool CEditUI::IsHotState() const
+	{
+		return ((m_uButtonState & UISTATE_HOT) != 0);
+	}
+
 	void CEditUI::SetEnabled(bool bEnable)
 	{
 		CControlUI::SetEnabled(bEnable);

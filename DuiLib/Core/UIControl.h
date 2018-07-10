@@ -47,6 +47,8 @@ public:
     void SetBkColor3(DWORD dwBackColor);
     LPCTSTR GetBkImage();
     void SetBkImage(LPCTSTR pStrImage);
+    DWORD GetHotBorderColor() const;
+    void SetHotBorderColor(DWORD dwBorderColor);
 	DWORD GetFocusBorderColor() const;
 	void SetFocusBorderColor(DWORD dwBorderColor);
     bool IsColorHSL() const;
@@ -130,6 +132,7 @@ public:
     virtual void SetFocus();
     virtual bool IsFloat() const;
     virtual void SetFloat(bool bFloat = true);
+	virtual bool IsHotState() const;
 
 	// 自定义(未处理的)属性
 	void AddCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr);
@@ -220,6 +223,7 @@ protected:
     TDrawInfo m_diBk;
 	TDrawInfo m_diFore;
     DWORD m_dwBorderColor;
+	DWORD m_dwHotBorderColor;
 	DWORD m_dwFocusBorderColor;
     bool m_bColorHSL;
 	int m_nBorderStyle;

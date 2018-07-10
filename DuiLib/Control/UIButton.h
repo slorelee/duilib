@@ -18,6 +18,8 @@ namespace DuiLib
 		void SetEnabled(bool bEnable = true);
 		void DoEvent(TEventUI& event);
 
+		bool IsHotState() const;
+
 		LPCTSTR GetNormalImage();
 		void SetNormalImage(LPCTSTR pStrImage);
 		LPCTSTR GetHotImage();

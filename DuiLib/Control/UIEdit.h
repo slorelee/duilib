@@ -56,6 +56,7 @@ namespace DuiLib
 		void SetInternVisible(bool bVisible = true);
 		SIZE EstimateSize(SIZE szAvailable);
 		void DoEvent(TEventUI& event);
+		bool IsHotState() const;
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
 		void PaintStatusImage(HDC hDC);

@@ -149,6 +149,11 @@ namespace DuiLib
 		CLabelUI::DoEvent(event);
 	}
 
+	bool CButtonUI::IsHotState() const
+	{
+		return ((m_uButtonState & UISTATE_HOT) != 0);
+	}
+
 	bool CButtonUI::Activate()
 	{
 		if( !CControlUI::Activate() ) return false;

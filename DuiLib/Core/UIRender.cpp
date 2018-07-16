@@ -334,12 +334,81 @@ void CRenderEngine::AdjustImage(bool bUseHSL, TImageInfo* imageInfo, short H, sh
 	}
 }
 
+static HBITMAP ConvertIconToBitmap(HICON hIcon, int *iWidth, int *iHeight)
+{
+    ICONINFO ii;
+    if (!::GetIconInfo(hIcon, &ii)) return NULL;
+    DWORD dwWidth = ii.xHotspot * 2;
+    DWORD dwHeight = ii.yHotspot * 2;
+    *iWidth = dwWidth;
+    *iHeight = dwHeight;
+    HDC hDC = ::GetDC(NULL);
+    HDC hMemDC = ::CreateCompatibleDC(hDC);
+    HBITMAP hbm = ::CreateCompatibleBitmap(hDC, dwWidth, dwHeight);
+    if (!hbm) return NULL;
+    SelectObject(hMemDC, hbm);
+    DrawIconEx(hMemDC, 0, 0, hIcon, dwWidth, dwHeight, 0, NULL, DI_NORMAL);
+    DeleteDC(hMemDC);
+    ReleaseDC(NULL, hDC);
+    return hbm;
+}
+
+
 TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask)
 {
     LPBYTE pData = NULL;
     DWORD dwSize = 0;
 
-	do 
+    DuiLib::CDuiString str(bitmap.m_lpstr);
+
+    int iIndex = 0;
+    int pos = str.ReverseFind(_T(','));
+    bool bLargeIcon = false;
+    if (pos > 0) {
+        LPTSTR pstr = NULL;
+        DuiLib::CDuiString sIndex = str.Right(str.GetLength() - pos - 1);
+        if (sIndex.CompareNoCase(_T("L")) == 0) {
+            bLargeIcon = true;
+        } else {
+            iIndex = _tcstol(sIndex, &pstr, 10);
+            if (sIndex.Right(1) == _T("L")) bLargeIcon = true;
+        }
+        str = str.Left(pos);
+    }
+    DuiLib::CDuiString ext = str.Right(4);
+    bool isModule = ext.CompareNoCase(_T(".exe")) == 0 ||
+        ext.CompareNoCase(_T(".dll")) == 0 || ext.CompareNoCase(_T(".ocx")) == 0;
+
+    if (ext.CompareNoCase(_T(".ico")) == 0 || isModule) {
+
+        CDuiString sFile = CPaintManagerUI::GetResourcePath();
+        HICON hIcon = NULL;
+        if (ext.CompareNoCase(_T(".ico")) == 0) {
+            sFile += bitmap.m_lpstr;
+            hIcon = (HICON)::LoadImage(NULL, sFile.GetData(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
+        } else if (isModule) {
+            if (str.Mid(1, 1) != _T(":")) {
+                str = sFile + str;
+            }
+            if (bLargeIcon) {
+                HICON hLargeIcons[1] = {NULL};
+                int rc = ::ExtractIconEx(str, iIndex, hLargeIcons, NULL, 1);
+                if (rc > 0) hIcon = hLargeIcons[0];
+            } else {
+                hIcon = ::ExtractIcon(CPaintManagerUI::GetInstance(), str, iIndex);
+            }
+        }
+        if (!hIcon) return NULL;
+        TImageInfo *data = new TImageInfo;
+        ::ZeroMemory(data, sizeof(TImageInfo));
+        data->hBitmap = ConvertIconToBitmap(hIcon, &(data->nX), &(data->nY));
+        data->bAlpha = true;
+        data->dwMask = mask;
+        DestroyIcon(hIcon);
+        return data;
+    }
+
+	do
 	{
 		if( type == NULL ) {
 			CDuiString sFile = CPaintManagerUI::GetResourcePath();

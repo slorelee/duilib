@@ -1,5 +1,8 @@
 #include "StdAfx.h"
 
+
+#include <ShlObj.h>
+
 ///////////////////////////////////////////////////////////////////////////////////////
 DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
 typedef DWORD ZRESULT;
@@ -353,6 +356,37 @@ static HBITMAP ConvertIconToBitmap(HICON hIcon, int *iWidth, int *iHeight)
     return hbm;
 }
 
+static bool GetShortCutPath(LPCTSTR file, LPTSTR buf, int nSize)
+{
+    HRESULT hres;
+    static IShellLink *psl = NULL;
+    IPersistFile *ppf = NULL;
+    WIN32_FIND_DATA fd;
+    if (!psl) {
+        hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&psl);
+        if (!SUCCEEDED(hres))
+            return false;
+    }
+
+    hres = psl->QueryInterface(IID_IPersistFile, (void**)&ppf);
+    if (SUCCEEDED(hres)) {
+        //wchar_t wsz[MAX_PATH];   //buffer   for   Unicode   string
+        //MultiByteToWideChar(CP_ACP,0,ShortcutFile,-1,wsz,MAX_PATH);   
+        //hres = ppf->Load(wsz,STGM_READ);
+        hres = ppf->Load(file, STGM_READ);
+        if (SUCCEEDED(hres))
+            hres = psl->GetPath(buf, nSize, &fd, 0);
+        ppf->Release();
+    }
+    //psl->Release();
+
+    return SUCCEEDED(hres);
+}
+
+#define ICON_FLAG_NORMALICON         0x0001
+#define ICON_FLAG_LARGEICON          0x0002
+#define ICON_FLAG_USE_GETFILEINFO    0x0004
+#define ICON_FLAG_OVERLAY            0x0100
 
 TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask)
 {
@@ -360,18 +394,34 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
     DWORD dwSize = 0;
 
     DuiLib::CDuiString str(bitmap.m_lpstr);
-
-    int iIndex = 0;
+    bool isIconRes = false;
+    int iIndex = SHGFI_ICON;
     int pos = str.ReverseFind(_T(','));
+    int iconFlags = ICON_FLAG_USE_GETFILEINFO;
     bool bLargeIcon = false;
+    bool bUseGetFileInfo = true;
     if (pos > 0) {
         LPTSTR pstr = NULL;
+        isIconRes = true;
         DuiLib::CDuiString sIndex = str.Right(str.GetLength() - pos - 1);
         if (sIndex.CompareNoCase(_T("L")) == 0) {
-            bLargeIcon = true;
+            iIndex = 0;
+            iconFlags = ICON_FLAG_LARGEICON;
+        } else if (sIndex.CompareNoCase(_T("F")) == 0) {
+            iIndex = SHGFI_ICON;
+            iconFlags = ICON_FLAG_USE_GETFILEINFO;
+        } else if (sIndex.CompareNoCase(_T("O")) == 0) {
+            iIndex = SHGFI_ICON;
+            iconFlags = ICON_FLAG_USE_GETFILEINFO | ICON_FLAG_OVERLAY;
         } else {
             iIndex = _tcstol(sIndex, &pstr, 10);
-            if (sIndex.Right(1) == _T("L")) bLargeIcon = true;
+            if (sIndex.Right(1) == _T("L")) {
+                iconFlags = ICON_FLAG_LARGEICON;
+            } else if (sIndex.Right(1) == _T("F")) {
+                iconFlags = ICON_FLAG_USE_GETFILEINFO;
+            } else {
+                iconFlags = ICON_FLAG_NORMALICON;
+            }
         }
         str = str.Left(pos);
     }
@@ -379,21 +429,34 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
     bool isModule = ext.CompareNoCase(_T(".exe")) == 0 ||
         ext.CompareNoCase(_T(".dll")) == 0 || ext.CompareNoCase(_T(".ocx")) == 0;
 
-    if (ext.CompareNoCase(_T(".ico")) == 0 || isModule) {
+    if (isModule || isIconRes || ext.CompareNoCase(_T(".ico")) == 0) {
 
         CDuiString sFile = CPaintManagerUI::GetResourcePath();
         HICON hIcon = NULL;
         if (ext.CompareNoCase(_T(".ico")) == 0) {
             sFile += bitmap.m_lpstr;
             hIcon = (HICON)::LoadImage(NULL, sFile.GetData(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
-        } else if (isModule) {
+        } else {
             if (str.Mid(1, 1) != _T(":")) {
                 str = sFile + str;
             }
-            if (bLargeIcon) {
+            if (iconFlags & ICON_FLAG_LARGEICON) {
                 HICON hLargeIcons[1] = {NULL};
                 int rc = ::ExtractIconEx(str, iIndex, hLargeIcons, NULL, 1);
                 if (rc > 0) hIcon = hLargeIcons[0];
+            } else if (iconFlags & ICON_FLAG_USE_GETFILEINFO) {
+                // get the icon without a link overlay
+                if ((ext.CompareNoCase(_T(".lnk")) == 0) &&
+                    (iconFlags & ICON_FLAG_OVERLAY) == 0) {
+                    TCHAR buff[MAX_PATH] = { 0 };
+                    if (GetShortCutPath(str.GetData(), buff, MAX_PATH)) {
+                        str = buff;
+                    }
+                }
+                SHFILEINFO sfi;
+                ZeroMemory(&sfi, sizeof(SHFILEINFO));
+                SHGetFileInfo(str, FILE_ATTRIBUTE_NORMAL, &sfi, sizeof(SHFILEINFO), iIndex);
+                hIcon = sfi.hIcon;
             } else {
                 hIcon = ::ExtractIcon(CPaintManagerUI::GetInstance(), str, iIndex);
             }

@@ -767,8 +767,8 @@ namespace DuiLib
 		pTreeNode->GetFolderButton()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnFolderChanged);
 		pTreeNode->GetCheckBox()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnCheckBoxChanged);
 
-		pTreeNode->SetVisibleFolderBtn(m_bVisibleFolderBtn);
-		pTreeNode->SetVisibleCheckBtn(m_bVisibleCheckBtn);
+		//pTreeNode->SetVisibleFolderBtn(m_bVisibleFolderBtn);
+		//pTreeNode->SetVisibleCheckBtn(m_bVisibleCheckBtn);
 		if(m_uItemMinWidth > 0)	pTreeNode->SetMinWidth(m_uItemMinWidth);
 
 		CListUI::Add(pTreeNode);
@@ -847,8 +847,8 @@ namespace DuiLib
         pTreeNode->GetFolderButton()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnFolderChanged);
         pTreeNode->GetCheckBox()->OnNotify += MakeDelegate(this,&CTreeViewUI::OnCheckBoxChanged);
 
-        pTreeNode->SetVisibleFolderBtn(m_bVisibleFolderBtn);
-        pTreeNode->SetVisibleCheckBtn(m_bVisibleCheckBtn);
+        //pTreeNode->SetVisibleFolderBtn(m_bVisibleFolderBtn);
+        //pTreeNode->SetVisibleCheckBtn(m_bVisibleCheckBtn);
 
         if(m_uItemMinWidth > 0) pTreeNode->SetMinWidth(m_uItemMinWidth);
 

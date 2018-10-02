@@ -2,6 +2,7 @@
 
 
 #include <ShlObj.h>
+#include "../Utils/GaussBlurFilter.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
@@ -646,6 +647,7 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 
 	TImageInfo* data = new TImageInfo;
 	data->hBitmap = hBitmap;
+	data->hBlurBitmap = NULL;
 	data->pBits = pDest;
 	data->nX = x;
 	data->nY = y;
@@ -661,6 +663,10 @@ void CRenderEngine::FreeImage(TImageInfo* bitmap, bool bDelete)
 	if (bitmap->hBitmap) {
 		::DeleteObject(bitmap->hBitmap);
 		bitmap->hBitmap = NULL;
+	}
+	if (bitmap->hBlurBitmap) {
+		::DeleteObject(bitmap->hBlurBitmap);
+		bitmap->hBlurBitmap = NULL;
 	}
 	if (bitmap->pSrcBits) {
 		delete[] bitmap->pSrcBits;
@@ -1122,6 +1128,43 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 	::DeleteDC(hCloneDC);
 }
 
+static HBITMAP GetBlurImage(HBITMAP hBitmap, float blur)
+{
+    while (1 && blur != 0.0f) {
+        float sigma = blur;
+        IImgFilter *pBlurFilter = new CGaussBlurImgFilter<float>();
+        pBlurFilter->SetThreads(8);
+        pBlurFilter->Init((LPVOID)&sigma);
+
+        BITMAP bmp;
+        BITMAP bmpBlur;
+        BITMAPINFO bi;
+        WORD    cClrBits;
+
+        // Retrieve the bitmap color format, width, and height
+        if (!GetObject(hBitmap, sizeof(BITMAP), (LPSTR)&bmp)) break;
+
+        // make a copy for blur
+        if (!GetObject(hBitmap, sizeof(BITMAP), (LPSTR)&bmpBlur)) break;
+        ULONG uDataSize = bmp.bmWidthBytes * bmp.bmHeight;
+        LPVOID pData = (LPVOID)LocalAlloc(LPTR, uDataSize);
+        //CopyMemory(pData, bmp.bmBits, uDataSize);
+
+        GetDIBits(NULL, hBitmap, 0, (UINT)bmp.bmHeight,
+            pData, (BITMAPINFO *)&bi, DIB_RGB_COLORS);
+
+        pBlurFilter->Filter(bmp.bmBits, bmpBlur.bmBits,
+            bmp.bmWidth, bmp.bmHeight, bmp.bmBitsPixel);
+
+        //hBitmap = CreateBitmapIndirect(&bmpBlur);
+        //DeleteObject(&bmp);
+        LocalFree(pData);
+        return CreateBitmapIndirect(&bmpBlur);
+        break;
+    }
+    return NULL;
+}
+
 bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rcItem, const RECT& rcPaint, 
 					  TDrawInfo& drawInfo)
 {
@@ -1226,6 +1269,9 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 				else if( sItem == _T("hsl") ) {
 					bUseHSL = (_tcscmp(sValue.GetData(), _T("true")) == 0);
 				}
+				else if (sItem == _T("blur")) {
+					drawInfo.fBlur = _ttof(sValue.GetData());
+				}
 			}
 			if( *pstrImage++ != _T(' ') ) break;
 		}
@@ -1266,7 +1312,13 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 	RECT rcTemp;
 	if( !::IntersectRect(&rcTemp, &rcDest, &rcItem) ) return true;
 	if( !::IntersectRect(&rcTemp, &rcDest, &rcPaint) ) return true;
-	DrawImage(hDC, drawInfo.pImageInfo->hBitmap, rcDest, rcPaint, drawInfo.rcBmpPart, drawInfo.rcScale9,
+	HBITMAP hDrawBmp = drawInfo.pImageInfo->hBitmap;
+	if (drawInfo.fBlur > 0.0f && drawInfo.pImageInfo->hBlurBitmap == NULL) {
+		hDrawBmp = GetBlurImage(hDrawBmp, drawInfo.fBlur);
+		TImageInfo *pImgInfo = (TImageInfo *)drawInfo.pImageInfo;
+		pImgInfo->hBlurBitmap = hDrawBmp;
+	}
+	DrawImage(hDC, hDrawBmp, rcDest, rcPaint, drawInfo.rcBmpPart, drawInfo.rcScale9,
 		drawInfo.pImageInfo->bAlpha, drawInfo.uFade, drawInfo.bHole, drawInfo.bTiledX, drawInfo.bTiledY);
 	return true;
 }

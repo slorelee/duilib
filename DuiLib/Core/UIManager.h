@@ -97,8 +97,9 @@ typedef struct DUILIB_API tagTFontInfo
 typedef struct DUILIB_API tagTImageInfo
 {
     HBITMAP hBitmap;
+    HBITMAP hBlurBitmap;
     LPBYTE pBits;
-	LPBYTE pSrcBits;
+    LPBYTE pSrcBits;
     int nX;
     int nY;
     bool bAlpha;
@@ -113,7 +114,7 @@ typedef struct DUILIB_API tagTDrawInfo
 	tagTDrawInfo(LPCTSTR lpsz);
 	void Clear();
 	CDuiString sDrawString;
-    CDuiString sImageName;
+	CDuiString sImageName;
 	bool bLoaded;
 	const TImageInfo* pImageInfo;
 	RECT rcDestOffset;
@@ -123,6 +124,7 @@ typedef struct DUILIB_API tagTDrawInfo
 	bool bHole;
 	bool bTiledX;
 	bool bTiledY;
+	float fBlur;
 } TDrawInfo;
 
 typedef struct DUILIB_API tagTPercentInfo

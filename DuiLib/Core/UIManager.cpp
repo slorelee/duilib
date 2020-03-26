@@ -2699,9 +2699,10 @@ const TImageInfo* CPaintManagerUI::GetImageEx(LPCTSTR bitmap, LPCTSTR type, DWOR
     return data;
 }
 
-const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD mask, bool bUseHSL, bool bShared)
+const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD mask, bool bUseHSL, bool bShared, LPCTSTR strID)
 {
-	if( bitmap == NULL || bitmap[0] == _T('\0') ) return NULL;
+    if( bitmap == NULL || bitmap[0] == _T('\0') ) return NULL;
+    if (strID == NULL) strID = bitmap;
 
     TImageInfo* data = NULL;
     if( type != NULL ) {
@@ -2732,28 +2733,28 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
 	{
 		if (bShared || m_bForceUseSharedRes)
 		{
-            TImageInfo* pOldImageInfo = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(bitmap));
+            TImageInfo* pOldImageInfo = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(strID));
             if (pOldImageInfo)
             {
                 CRenderEngine::FreeImage(pOldImageInfo);
-                m_SharedResInfo.m_ImageHash.Remove(bitmap);
+                m_SharedResInfo.m_ImageHash.Remove(strID);
             }
 
-			if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
+			if( !m_SharedResInfo.m_ImageHash.Insert(strID, data) ) {
 				CRenderEngine::FreeImage(data);
 				data = NULL;
 			}
 		}
 		else
 		{
-            TImageInfo* pOldImageInfo = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(bitmap));
+            TImageInfo* pOldImageInfo = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(strID));
             if (pOldImageInfo)
             {
                 CRenderEngine::FreeImage(pOldImageInfo);
-                m_ResInfo.m_ImageHash.Remove(bitmap);
+                m_ResInfo.m_ImageHash.Remove(strID);
             }
 
-			if( !m_ResInfo.m_ImageHash.Insert(bitmap, data) ) {
+			if( !m_ResInfo.m_ImageHash.Insert(strID, data) ) {
 				CRenderEngine::FreeImage(data);
 				data = NULL;
 			}

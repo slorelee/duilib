@@ -297,7 +297,7 @@ public:
 
     const TImageInfo* GetImage(LPCTSTR bitmap);
     const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, bool bUseHSL = false);
-    const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, bool bUseHSL = false, bool bShared = false);
+    const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, bool bUseHSL = false, bool bShared = false, LPCTSTR strID = NULL);
     const TImageInfo* AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha, bool bShared = false);
     void RemoveImage(LPCTSTR bitmap, bool bShared = false);
     void RemoveAllImages(bool bShared = false);

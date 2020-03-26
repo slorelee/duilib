@@ -58,14 +58,18 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
             if( _tcsicmp(pstrClass, _T("Image")) == 0 ) {
                 nAttributes = node.GetAttributeCount();
                 LPCTSTR pImageName = NULL;
+                LPCTSTR pImageFile = NULL;
                 LPCTSTR pImageResType = NULL;
                 DWORD mask = 0;
-				bool shared = false;
+                bool shared = false;
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = node.GetAttributeName(i);
                     pstrValue = node.GetAttributeValue(i);
                     if( _tcsicmp(pstrName, _T("name")) == 0 ) {
                         pImageName = pstrValue;
+                    }
+                    else if (_tcsicmp(pstrName, _T("file")) == 0) {
+                        pImageFile = pstrValue;
                     }
                     else if( _tcsicmp(pstrName, _T("restype")) == 0 ) {
                         pImageResType = pstrValue;
@@ -74,28 +78,33 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
                         mask = _tcstoul(pstrValue, &pstr, 16);
                     }
-					else if( _tcsicmp(pstrName, _T("shared")) == 0 ) {
-						shared = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
+                    else if( _tcsicmp(pstrName, _T("shared")) == 0 ) {
+                        shared = (_tcsicmp(pstrValue, _T("true")) == 0);
+                    }
                 }
-                if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask, shared);
+                if (pImageName && pImageFile) {
+                    pManager->AddImage(pImageFile, pImageResType, mask, false, shared, pImageName);
+                }
+                else if (pImageName) {
+                    pManager->AddImage(pImageName, pImageResType, mask, false, shared);
+                }
             }
             else if( _tcsicmp(pstrClass, _T("Font")) == 0 ) {
                 nAttributes = node.GetAttributeCount();
-				int id = -1;
+                int id = -1;
                 LPCTSTR pFontName = NULL;
                 int size = 12;
                 bool bold = false;
                 bool underline = false;
                 bool italic = false;
                 bool defaultfont = false;
-				bool shared = false;
+                bool shared = false;
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = node.GetAttributeName(i);
                     pstrValue = node.GetAttributeValue(i);
-					if( _tcsicmp(pstrName, _T("id")) == 0 ) {
-						id = _tcstol(pstrValue, &pstr, 10);
-					}
+                    if( _tcsicmp(pstrName, _T("id")) == 0 ) {
+                        id = _tcstol(pstrValue, &pstr, 10);
+                    }
                     else if( _tcsicmp(pstrName, _T("name")) == 0 ) {
                         pFontName = pstrValue;
                     }
@@ -114,9 +123,9 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                     else if( _tcsicmp(pstrName, _T("default")) == 0 ) {
                         defaultfont = (_tcsicmp(pstrValue, _T("true")) == 0);
                     }
-					else if( _tcsicmp(pstrName, _T("shared")) == 0 ) {
-						shared = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
+                    else if( _tcsicmp(pstrName, _T("shared")) == 0 ) {
+                        shared = (_tcsicmp(pstrValue, _T("true")) == 0);
+                    }
                 }
                 if( id >= 0 && pFontName ) {
                     pManager->AddFont(id, pFontName, size, bold, underline, italic, shared);

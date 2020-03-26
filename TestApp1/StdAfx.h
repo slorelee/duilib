@@ -17,29 +17,29 @@ using namespace DuiLib;
 #ifdef _WIN64
     #ifdef _DEBUG
         #ifdef _UNICODE
-            #pragma comment(lib, "..\\Lib\\DuiLib_ud_x64.lib")
+            #pragma comment(lib, "..\\bin\\DuiLib_ud_x64.lib")
         #else
-            #pragma comment(lib, "..\\Lib\\DuiLib_d_x64.lib")
+            #pragma comment(lib, "..\\bin\\DuiLib_d_x64.lib")
         #endif
     #else
         #ifdef _UNICODE
-        #pragma comment(lib, "..\\Lib\\DuiLib_u_x64.lib")
+        #pragma comment(lib, "..\\bin\\DuiLib_u_x64.lib")
         #else
-        #pragma comment(lib, "..\\Lib\\DuiLib_x64.lib")
+        #pragma comment(lib, "..\\bin\\DuiLib_x64.lib")
         #endif
     #endif
 #else
     #ifdef _DEBUG
         #ifdef _UNICODE
-            #pragma comment(lib, "..\\Lib\\DuiLib_ud.lib")
+            #pragma comment(lib, "..\\bin\\DuiLib_ud.lib")
         #else
-            #pragma comment(lib, "..\\Lib\\DuiLib_d.lib")
+            #pragma comment(lib, "..\\bin\\DuiLib_d.lib")
         #endif
     #else
         #ifdef _UNICODE
-        #pragma comment(lib, "..\\Lib\\DuiLib_u.lib")
+        #pragma comment(lib, "..\\bin\\DuiLib_u.lib")
         #else
-        #pragma comment(lib, "..\\Lib\\DuiLib.lib")
+        #pragma comment(lib, "..\\bin\\DuiLib.lib")
         #endif
     #endif
 #endif

@@ -183,6 +183,9 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                         if (pStyleName) {
                             pManager->AddDefaultAttributeList(pStyleName, pstrName, pstrValue, shared);
                         }
+                        else {
+                            pManager->SetWindowAttribute(pstrName, pstrValue);
+                        }
                     }
                 }
 

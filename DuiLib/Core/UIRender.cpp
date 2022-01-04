@@ -1648,13 +1648,15 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 				break;
         }
         else if( !bInRaw && ( *pstrText == _T('<') || *pstrText == _T('{') )
-            && ( pstrText[1] >= _T('a') && pstrText[1] <= _T('z') )
+            && ( (pstrText[1] >= _T('a') && pstrText[1] <= _T('z')) || pstrText[1] == _T('A') )
             && ( pstrText[2] == _T(' ') || pstrText[2] == _T('>') || pstrText[2] == _T('}') ) ) {
                 pstrText++;
                 LPCTSTR pstrNextStart = NULL;
                 switch( *pstrText ) {
             case _T('a'):  // Link
+            case _T('A'):  // Link without compulsory underline
                 {
+                    TCHAR chrTag = *pstrText;
                     pstrText++;
                     while( *pstrText > _T('\0') && *pstrText <= _T(' ') ) pstrText = ::CharNext(pstrText);
                     if( iLinkIndex < nLinkRects && !bLineDraw ) {
@@ -1681,7 +1683,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     ::SetTextColor(hDC,  RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                     TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
-                    if( pFontInfo->bUnderline == false ) {
+                    if( chrTag == _T('a') && pFontInfo->bUnderline == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
 						if( hFont == NULL ) {
 							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
@@ -2039,6 +2041,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                 }
                 break;
             case _T('a'):
+            case _T('A'):
                 {
                     if( iLinkIndex < nLinkRects ) {
                         if( !bLineDraw ) ::SetRect(&prcLinks[iLinkIndex], ptLinkStart.x, ptLinkStart.y, MIN(pt.x, rc.right), pt.y + pTm->tmHeight + pTm->tmExternalLeading);

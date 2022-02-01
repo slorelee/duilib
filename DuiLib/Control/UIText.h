@@ -22,7 +22,7 @@ namespace DuiLib
 		void PaintText(HDC hDC);
 
 	protected:
-		enum { MAX_LINK = 8 };
+		enum { MAX_LINK = 32 };
 		int m_nLinks;
 		RECT m_rcLinks[MAX_LINK];
 		CDuiString m_sLinks[MAX_LINK];

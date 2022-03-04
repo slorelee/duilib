@@ -435,7 +435,11 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
         CDuiString sFile = CPaintManagerUI::GetResourcePath();
         HICON hIcon = NULL;
         if (ext.CompareNoCase(_T(".ico")) == 0) {
-            sFile += bitmap.m_lpstr;
+            if (str.Mid(1, 1) != _T(":")) {
+                sFile += bitmap.m_lpstr;
+            } else {
+                sFile = bitmap.m_lpstr;
+            }
             hIcon = (HICON)::LoadImage(NULL, sFile.GetData(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE);
         } else {
             if (str.Mid(1, 1) != _T(":")) {

@@ -1236,7 +1236,8 @@ void CControlUI::PaintText(HDC hDC)
 
 void CControlUI::PaintBorder(HDC hDC)
 {
-	if(m_rcBorderSize.left > 0 && (m_dwBorderColor != 0 || m_dwFocusBorderColor != 0 || m_dwHotBorderColor != 0)) {
+	RECT noBorder = { 0 };
+	if((memcmp(&m_rcBorderSize, &noBorder, sizeof(noBorder)) != 0) && (m_dwBorderColor != 0 || m_dwFocusBorderColor != 0 || m_dwHotBorderColor != 0)) {
 		DWORD dwBorderColor = m_dwBorderColor;
 		if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 )//画圆角边框
 		{

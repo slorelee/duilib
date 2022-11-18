@@ -20,7 +20,7 @@ typedef struct tagTListInfoUI
     int nColumns;
     RECT rcColumn[UILIST_MAX_COLUMNS];
     UINT uFixedHeight; 
-    int nFont;
+    LPCTSTR nFont;
     UINT uTextStyle;
     RECT rcTextPadding;
     DWORD dwTextColor;
@@ -134,8 +134,8 @@ public:
 
     UINT GetItemFixedHeight();
     void SetItemFixedHeight(UINT nHeight);
-    int GetItemFont(int index);
-    void SetItemFont(int index);
+    LPCTSTR GetItemFont(int index);
+    void SetItemFont(LPCTSTR id);
     UINT GetItemTextStyle();
     void SetItemTextStyle(UINT uStyle);
     RECT GetItemTextPadding() const;
@@ -260,7 +260,7 @@ public:
     void SetSepColor(DWORD dwSepColor);
 	void SetTextPadding(RECT rc);
 	RECT GetTextPadding() const;
-    void SetFont(int index);
+    void SetFont(LPCTSTR id);
     bool IsShowHtml();
     void SetShowHtml(bool bShowHtml = true);
     LPCTSTR GetNormalImage() const;
@@ -289,7 +289,7 @@ protected:
     int m_iSepWidth;
     DWORD m_dwTextColor;
     DWORD m_dwSepColor;
-    int m_iFont;
+    LPCTSTR m_iFont;
     UINT m_uTextStyle;
     bool m_bShowHtml;
 	RECT m_rcTextPadding;
@@ -375,7 +375,7 @@ protected:
 
     SIZE    m_szAvailableLast;
     UINT    m_uFixedHeightLast; 
-    int     m_nFontLast;
+    LPCTSTR m_nFontLast;
     UINT    m_uTextStyleLast;
     RECT    m_rcTextPaddingLast;
 };

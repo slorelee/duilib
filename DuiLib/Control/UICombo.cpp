@@ -352,7 +352,7 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
 
     m_ListInfo.nColumns = 0;
     m_ListInfo.uFixedHeight = 0;
-    m_ListInfo.nFont = -1;
+    m_ListInfo.nFont = NULL;
     m_ListInfo.uTextStyle = DT_VCENTER | DT_SINGLELINE;
     m_ListInfo.dwTextColor = 0xFF000000;
     m_ListInfo.dwBkColor = 0;
@@ -849,14 +849,14 @@ void CComboUI::SetItemFixedHeight(UINT nHeight)
     Invalidate();
 }
 
-int CComboUI::GetItemFont(int index)
+LPCTSTR CComboUI::GetItemFont(int index)
 {
     return m_ListInfo.nFont;
 }
 
-void CComboUI::SetItemFont(int index)
+void CComboUI::SetItemFont(LPCTSTR id)
 {
-    m_ListInfo.nFont = index;
+    m_ListInfo.nFont = id;
     Invalidate();
 }
 
@@ -1114,7 +1114,7 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		SetDropBoxSize(szDropBoxSize);
 	}
     else if( _tcscmp(pstrName, _T("itemheight")) == 0 ) m_ListInfo.uFixedHeight = _ttoi(pstrValue);
-    else if( _tcscmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.nFont = _ttoi(pstrValue);
+    else if( _tcscmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.nFont = pstrValue;
     else if( _tcscmp(pstrName, _T("itemalign")) == 0 ) {
         if( _tcsstr(pstrValue, _T("left")) != NULL ) {
             m_ListInfo.uTextStyle &= ~(DT_CENTER | DT_RIGHT);

@@ -1474,7 +1474,7 @@ void CRenderEngine::DrawRoundRect(HDC hDC, const RECT& rc, int nSize, int width,
     ::DeleteObject(hPen);
 }
 
-void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, int iFont, UINT uStyle)
+void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, LPCTSTR pstrFontId, UINT uStyle)
 {
     ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
     if( pstrText == NULL || pManager == NULL ) return;
@@ -1485,12 +1485,12 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 
     ::SetBkMode(hDC, TRANSPARENT);
     ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
-    HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
+    HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(pstrFontId));
     ::DrawText(hDC, pstrText, -1, &rc, uStyle | DT_NOPREFIX);
     ::SelectObject(hDC, hOldFont);
 }
 
-void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, RECT* prcLinks, CDuiString* sLinks, int& nLinkRects, int iDefaultFont, UINT uStyle)
+void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, RECT* prcLinks, CDuiString* sLinks, int& nLinkRects, LPCTSTR pstrDefFontId, UINT uStyle)
 {
     // 考虑到在xml编辑器中使用<>符号不方便，可以使用{}符号代替
     // 支持标签嵌套（如<l><b>text</b></l>），但是交叉嵌套是应该避免的（如<l><b>text</l></b>）
@@ -1532,8 +1532,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
 	pstrText = sText;
 
-    TEXTMETRIC* pTm = &pManager->GetFontInfo(iDefaultFont)->tm;
-    HFONT hOldFont = (HFONT) ::SelectObject(hDC, pManager->GetFontInfo(iDefaultFont)->hFont);
+    TEXTMETRIC* pTm = &pManager->GetFontInfo(pstrDefFontId)->tm;
+    HFONT hOldFont = (HFONT) ::SelectObject(hDC, pManager->GetFontInfo(pstrDefFontId)->hFont);
     ::SetBkMode(hDC, TRANSPARENT);
     ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
     DWORD dwBkColor = pManager->GetDefaultSelectedBkColor();
@@ -1548,7 +1548,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 			rcText.bottom = rc.bottom - rc.top;
 		}
 		int nLinks = 0;
-		DrawHtmlText(hDC, pManager, rcText, pstrText, dwTextColor, NULL, NULL, nLinks, iDefaultFont, uStyle | DT_CALCRECT & ~DT_CENTER & ~DT_RIGHT & ~DT_VCENTER & ~DT_BOTTOM);
+		DrawHtmlText(hDC, pManager, rcText, pstrText, dwTextColor, NULL, NULL, nLinks, pstrDefFontId, uStyle | DT_CALCRECT & ~DT_CENTER & ~DT_RIGHT & ~DT_VCENTER & ~DT_BOTTOM);
 		if( (uStyle & DT_SINGLELINE) != 0 ){
 			if( (uStyle & DT_CENTER) != 0 ) {
 				rc.left = rc.left + ((rc.right - rc.left) / 2) - ((rcText.right - rcText.left) / 2);
@@ -1685,7 +1685,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     //}
                     aColorArray.Add((LPVOID)clrColor);
                     ::SetTextColor(hDC,  RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
-                    TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
+                    TFontInfo* pFontInfo = pManager->GetFontInfo(pstrDefFontId);
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( chrTag == _T('a') && pFontInfo->bUnderline == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
@@ -1706,7 +1706,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             case _T('b'):  // Bold
                 {
                     pstrText++;
-                    TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
+                    TFontInfo* pFontInfo = pManager->GetFontInfo(pstrDefFontId);
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bBold == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic);
@@ -1739,11 +1739,31 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     LPCTSTR pstrTemp = pstrText;
                     int iFont = (int) _tcstol(pstrText, const_cast<LPTSTR*>(&pstrText), 10);
                     //if( isdigit(*pstrText) ) { // debug版本会引起异常
-                    if( pstrTemp != pstrText ) {
-                        TFontInfo* pFontInfo = pManager->GetFontInfo(iFont);
+                    if (pstrTemp != pstrText) {
+                        TCHAR idBuffer[16];
+                        ::ZeroMemory(idBuffer, sizeof(idBuffer));
+                        _itot(iFont, idBuffer, 10);
+                        TFontInfo* pFontInfo = pManager->GetFontInfo(idBuffer);
                         aFontArray.Add(pFontInfo);
                         pTm = &pFontInfo->tm;
                         ::SelectObject(hDC, pFontInfo->hFont);
+                    }
+                    else if (pstrText[0] == _T('$')) {  // 自定义字体区分
+                        CDuiString sFontId;
+                        pstrText++;
+                        pstrTemp = pstrText;
+                        while (*pstrText != _T('\0') && *pstrText != _T('>') && *pstrText != _T('}') && *pstrText != _T(' ')) {
+                            pstrTemp = ::CharNext(pstrText);
+                            while (pstrText < pstrTemp) {
+                                sFontId += *pstrText++;
+                            }
+                        }
+                        if (pstrTemp != pstrText) {
+                            TFontInfo* pFontInfo = pManager->GetFontInfo(sFontId);
+                            aFontArray.Add(pFontInfo);
+                            pTm = &pFontInfo->tm;
+                            ::SelectObject(hDC, pFontInfo->hFont);
+                        }
                     }
                     else {
                         CDuiString sFontName;
@@ -1804,7 +1824,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     }
                     if( sName.IsEmpty() ) { // Italic
                         pstrNextStart = NULL;
-                        TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
+                        TFontInfo* pFontInfo = pManager->GetFontInfo(pstrDefFontId);
                         if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                         if( pFontInfo->bItalic == false ) {
                             HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true);
@@ -1971,7 +1991,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             case _T('u'):  // Underline text
                 {
                     pstrText++;
-                    TFontInfo* pFontInfo = pManager->GetFontInfo(iDefaultFont);
+                    TFontInfo* pFontInfo = pManager->GetFontInfo(pstrDefFontId);
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bUnderline == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
@@ -2065,7 +2085,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     pstrText++;
                     aFontArray.Remove(aFontArray.GetSize() - 1);
                     TFontInfo* pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
-                    if( pFontInfo == NULL ) pFontInfo = pManager->GetFontInfo(iDefaultFont);
+                    if( pFontInfo == NULL ) pFontInfo = pManager->GetFontInfo(pstrDefFontId);
                     if( pTm->tmItalic && pFontInfo->bItalic == false ) {
                         ABC abc;
                         ::GetCharABCWidths(hDC, _T(' '), _T(' '), &abc);
@@ -2242,7 +2262,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                 if( aColorArray.GetSize() > 0 ) clrColor = (int)aColorArray.GetAt(aColorArray.GetSize() - 1);
                 ::SetTextColor(hDC, RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
                 TFontInfo* pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
-                if( pFontInfo == NULL ) pFontInfo = pManager->GetFontInfo(iDefaultFont);
+                if( pFontInfo == NULL ) pFontInfo = pManager->GetFontInfo(pstrDefFontId);
                 pTm = &pFontInfo->tm;
                 ::SelectObject(hDC, pFontInfo->hFont);
                 if( bInSelected ) ::SetBkMode(hDC, OPAQUE);
@@ -2380,7 +2400,7 @@ HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pCo
     return hBitmap;
 }
 
-SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR pstrText, int iFont, UINT uStyle )
+SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR pstrText, LPCTSTR pstrId, UINT uStyle )
 {
 	CDuiString sText = pstrText;
 	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
@@ -2389,7 +2409,7 @@ SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR ps
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 	if( pstrText == NULL || pManager == NULL ) return size;
 	::SetBkMode(hDC, TRANSPARENT);
-	HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
+	HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(pstrId));
 	GetTextExtentPoint32(hDC, pstrText, _tcslen(pstrText) , &size);
 	::SelectObject(hDC, hOldFont);
 	return size;

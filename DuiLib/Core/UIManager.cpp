@@ -2376,6 +2376,14 @@ DWORD CPaintManagerUI::GetCustomFontCount(bool bShared) const
 
 HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared)
 {
+    TCHAR idBuffer[16];
+    ::ZeroMemory(idBuffer, sizeof(idBuffer));
+    _itot(id, idBuffer, 10);
+    return AddFont(idBuffer, pStrFontName, nSize, bBold, bUnderline, bItalic, bShared);
+}
+
+HFONT CPaintManagerUI::AddFont(LPCTSTR pStrId, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared)
+{
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     _tcsncpy(lf.lfFaceName, pStrFontName, LF_FACESIZE);
@@ -2401,20 +2409,17 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
         ::GetTextMetrics(m_hDcPaint, &pFontInfo->tm);
         ::SelectObject(m_hDcPaint, hOldFont);
     }
-	TCHAR idBuffer[16];
-	::ZeroMemory(idBuffer, sizeof(idBuffer));
-	_itot(id, idBuffer, 10);
 	if (bShared || m_bForceUseSharedRes)
 	{
-		TFontInfo* pOldFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(idBuffer));
+		TFontInfo* pOldFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(pStrId));
 		if (pOldFontInfo)
 		{
 			::DeleteObject(pOldFontInfo->hFont);
 			delete pOldFontInfo;
-            m_SharedResInfo.m_CustomFonts.Remove(idBuffer);
+            m_SharedResInfo.m_CustomFonts.Remove(pStrId);
 		}
 
-		if( !m_SharedResInfo.m_CustomFonts.Insert(idBuffer, pFontInfo) ) 
+		if( !m_SharedResInfo.m_CustomFonts.Insert(pStrId, pFontInfo) )
 		{
 			::DeleteObject(hFont);
 			delete pFontInfo;
@@ -2423,15 +2428,15 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 	}
 	else
 	{
-		TFontInfo* pOldFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(idBuffer));
+		TFontInfo* pOldFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(pStrId));
 		if (pOldFontInfo)
 		{
 			::DeleteObject(pOldFontInfo->hFont);
 			delete pOldFontInfo;
-            m_ResInfo.m_CustomFonts.Remove(idBuffer);
+            m_ResInfo.m_CustomFonts.Remove(pStrId);
 		}
 
-		if( !m_ResInfo.m_CustomFonts.Insert(idBuffer, pFontInfo) ) 
+		if( !m_ResInfo.m_CustomFonts.Insert(pStrId, pFontInfo) )
 		{
 			::DeleteObject(hFont);
 			delete pFontInfo;
@@ -2442,15 +2447,12 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
     return hFont;
 }
 
-HFONT CPaintManagerUI::GetFont(int id)
+HFONT CPaintManagerUI::GetFont(LPCTSTR pStrId)
 {
-	if (id < 0) return GetDefaultFontInfo()->hFont;
-		
-	TCHAR idBuffer[16];
-	::ZeroMemory(idBuffer, sizeof(idBuffer));
-	_itot(id, idBuffer, 10);
-	TFontInfo* pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(idBuffer));
-	if( !pFontInfo ) pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(idBuffer));
+	if (!pStrId || pStrId[0] == _T('\0')) return GetDefaultFontInfo()->hFont;
+
+	TFontInfo* pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(pStrId));
+	if( !pFontInfo ) pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(pStrId));
 	if (!pFontInfo) return GetDefaultFontInfo()->hFont;
 	return pFontInfo->hFont;
 }
@@ -2571,31 +2573,27 @@ void CPaintManagerUI::RemoveFont(HFONT hFont, bool bShared)
 	}
 }
 
-void CPaintManagerUI::RemoveFont(int id, bool bShared)
+void CPaintManagerUI::RemoveFont(LPCTSTR pStrId, bool bShared)
 {
-	TCHAR idBuffer[16];
-	::ZeroMemory(idBuffer, sizeof(idBuffer));
-	_itot(id, idBuffer, 10);
-
 	TFontInfo* pFontInfo = NULL;
 	if (bShared)
 	{
-		pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(idBuffer));
+		pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(pStrId));
 		if (pFontInfo)
 		{
 			::DeleteObject(pFontInfo->hFont);
 			delete pFontInfo;
-			m_SharedResInfo.m_CustomFonts.Remove(idBuffer);
+			m_SharedResInfo.m_CustomFonts.Remove(pStrId);
 		}
 	}
 	else
 	{
-		pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(idBuffer));
+		pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(pStrId));
 		if (pFontInfo)
 		{
 			::DeleteObject(pFontInfo->hFont);
 			delete pFontInfo;
-			m_ResInfo.m_CustomFonts.Remove(idBuffer);
+			m_ResInfo.m_CustomFonts.Remove(pStrId);
 		}
 	}
 }
@@ -2631,16 +2629,16 @@ void CPaintManagerUI::RemoveAllFonts(bool bShared)
 	}
 }
 
-TFontInfo* CPaintManagerUI::GetFontInfo(int id)
+TFontInfo* CPaintManagerUI::GetFontInfo(LPCTSTR pStrId)
 {
-	TCHAR idBuffer[16];
-	::ZeroMemory(idBuffer, sizeof(idBuffer));
-	_itot(id, idBuffer, 10);
-	TFontInfo* pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(idBuffer));
-	if (!pFontInfo) pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(idBuffer));
-	if (!pFontInfo) pFontInfo = GetDefaultFontInfo();
+    TFontInfo* pFontInfo = NULL;
+    if (pStrId && pStrId[0] != _T('\0')) {
+        pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(pStrId));
+        if (!pFontInfo) pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(pStrId));
+    }
+    if (!pFontInfo) pFontInfo = GetDefaultFontInfo();
     if (pFontInfo->tm.tmHeight == 0) 
-	{
+    {
         HFONT hOldFont = (HFONT) ::SelectObject(m_hDcPaint, pFontInfo->hFont);
         ::GetTextMetrics(m_hDcPaint, &pFontInfo->tm);
         ::SelectObject(m_hDcPaint, hOldFont);

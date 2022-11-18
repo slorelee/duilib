@@ -64,8 +64,8 @@ public:
     TListInfoUI* GetListInfo();
     UINT GetItemFixedHeight();
     void SetItemFixedHeight(UINT nHeight);
-    int GetItemFont(int index);
-    void SetItemFont(int index);
+    LPCTSTR GetItemFont(int index);
+    void SetItemFont(LPCTSTR id);
     UINT GetItemTextStyle();
     void SetItemTextStyle(UINT uStyle);
 	RECT GetItemTextPadding() const;

@@ -18,7 +18,7 @@ namespace DuiLib
 		m_uTextStyle(DT_VCENTER|DT_SINGLELINE), 
 		m_dwTextColor(0), 
 		m_dwDisabledTextColor(0),
-		m_iFont(-1),
+		m_iFont(NULL),
 		m_bShowHtml(false),
         m_bNeedEstimateSize(true),
 		m_EnableEffect(false),
@@ -150,14 +150,14 @@ namespace DuiLib
 		return m_dwDisabledTextColor;
 	}
 
-	void CLabelUI::SetFont(int index)
+	void CLabelUI::SetFont(LPCTSTR id)
 	{
-		m_iFont = index;
+		m_iFont = id;
         m_bNeedEstimateSize = true;
 		Invalidate();
 	}
 
-	int CLabelUI::GetFont() const
+	LPCTSTR CLabelUI::GetFont() const
 	{
 		return m_iFont;
 	}
@@ -288,7 +288,7 @@ namespace DuiLib
 			if( _tcscmp(pstrValue, _T("true")) == 0 ) m_uTextStyle |= DT_END_ELLIPSIS;
 			else m_uTextStyle &= ~DT_END_ELLIPSIS;
 		}    
-		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(pstrValue);
 		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;

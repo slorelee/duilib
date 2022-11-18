@@ -91,7 +91,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
             }
             else if( _tcsicmp(pstrClass, _T("Font")) == 0 ) {
                 nAttributes = node.GetAttributeCount();
-                int id = -1;
+                LPCTSTR pstrId = NULL;
                 LPCTSTR pFontName = NULL;
                 int size = 12;
                 bool bold = false;
@@ -103,7 +103,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                     pstrName = node.GetAttributeName(i);
                     pstrValue = node.GetAttributeValue(i);
                     if( _tcsicmp(pstrName, _T("id")) == 0 ) {
-                        id = _tcstol(pstrValue, &pstr, 10);
+                        pstrId = pstrValue;
                     }
                     else if( _tcsicmp(pstrName, _T("name")) == 0 ) {
                         pFontName = pstrValue;
@@ -127,8 +127,8 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                         shared = (_tcsicmp(pstrValue, _T("true")) == 0);
                     }
                 }
-                if( id >= 0 && pFontName ) {
-                    pManager->AddFont(id, pFontName, size, bold, underline, italic, shared);
+                if(pstrId && pFontName ) {
+                    pManager->AddFont(pstrId, pFontName, size, bold, underline, italic, shared);
                     if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic, shared);
                 }
             }

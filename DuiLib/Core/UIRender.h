@@ -46,12 +46,12 @@ public:
     static void DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle = PS_SOLID);
     static void DrawRoundRect(HDC hDC, const RECT& rc, int width, int height, int nSize, DWORD dwPenColor, int nStyle = PS_SOLID);
     static void DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, \
-        DWORD dwTextColor, int iFont, UINT uStyle);
+        DWORD dwTextColor, LPCTSTR pstrFontId, UINT uStyle);
     static void DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, 
-        DWORD dwTextColor, RECT* pLinks, CDuiString* sLinks, int& nLinkRects, int iDefaultFont, UINT uStyle);
+        DWORD dwTextColor, RECT* pLinks, CDuiString* sLinks, int& nLinkRects, LPCTSTR pstrDefFontId, UINT uStyle);
 	static HBITMAP GenerateBitmap(CPaintManagerUI* pManager, RECT rc, CControlUI* pStopControl = NULL, DWORD dwFilterColor = 0);
     static HBITMAP GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pControl, RECT rc, DWORD dwFilterColor = 0);
-	static SIZE GetTextSize(HDC hDC, CPaintManagerUI* pManager , LPCTSTR pstrText, int iFont, UINT uStyle);
+	static SIZE GetTextSize(HDC hDC, CPaintManagerUI* pManager , LPCTSTR pstrText, LPCTSTR pstrId, UINT uStyle);
 };
 
 } // namespace DuiLib

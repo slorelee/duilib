@@ -48,8 +48,8 @@ namespace DuiLib
 		Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
 
 		HFONT hFont=NULL;
-		int iFontIndex=m_pOwner->GetFont();
-		if (iFontIndex!=-1)
+		LPCTSTR iFontIndex=m_pOwner->GetFont();
+		if (iFontIndex!=NULL)
 			hFont=m_pOwner->GetManager()->GetFont(iFontIndex);
 		if (hFont==NULL)
 			hFont=m_pOwner->GetManager()->GetDefaultFontInfo()->hFont;

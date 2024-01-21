@@ -289,7 +289,7 @@ protected:
     int m_iSepWidth;
     DWORD m_dwTextColor;
     DWORD m_dwSepColor;
-    LPCTSTR m_iFont;
+    CDuiString	m_iFont;
     UINT m_uTextStyle;
     bool m_bShowHtml;
 	RECT m_rcTextPadding;

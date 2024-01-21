@@ -1452,7 +1452,7 @@ SIZE CListHeaderUI::EstimateSize(SIZE szAvailable)
 
 CListHeaderItemUI::CListHeaderItemUI() : m_bDragable(true), m_uButtonState(0), m_iSepWidth(4),
 m_uTextStyle(DT_CENTER | DT_VCENTER | DT_SINGLELINE), m_dwTextColor(0), m_dwSepColor(0), 
-m_iFont(NULL), m_bShowHtml(false)
+m_iFont(_T("")), m_bShowHtml(false)
 {
 	SetTextPadding(CDuiRect(2, 0, 2, 0));
     ptLastMouse.x = ptLastMouse.y = 0;

@@ -18,7 +18,7 @@ namespace DuiLib
 		m_uTextStyle(DT_VCENTER|DT_SINGLELINE), 
 		m_dwTextColor(0), 
 		m_dwDisabledTextColor(0),
-		m_iFont(NULL),
+		m_iFont(_T("")),
 		m_bShowHtml(false),
         m_bNeedEstimateSize(true),
 		m_EnableEffect(false),
@@ -159,7 +159,7 @@ namespace DuiLib
 
 	LPCTSTR CLabelUI::GetFont() const
 	{
-		return m_iFont;
+		return m_iFont.GetData();
 	}
 
 	RECT CLabelUI::GetTextPadding() const

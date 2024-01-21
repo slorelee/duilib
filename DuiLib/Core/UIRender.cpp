@@ -1737,9 +1737,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     pstrText++;
                     while( *pstrText > _T('\0') && *pstrText <= _T(' ') ) pstrText = ::CharNext(pstrText);
                     LPCTSTR pstrTemp = pstrText;
-                    int iFont = (int) _tcstol(pstrText, const_cast<LPTSTR*>(&pstrText), 10);
+                    int iFont = (int) _tcstol(pstrText, const_cast<LPTSTR*>(&pstrTemp), 10);
                     //if( isdigit(*pstrText) ) { // debug版本会引起异常
-                    if (pstrTemp != pstrText) {
+                    if (pstrTemp != pstrText && pstrTemp[0] == _T('>')) {
                         TCHAR idBuffer[16];
                         ::ZeroMemory(idBuffer, sizeof(idBuffer));
                         _itot(iFont, idBuffer, 10);
@@ -1753,12 +1753,12 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         pstrText++;
                         pstrTemp = pstrText;
                         while (*pstrText != _T('\0') && *pstrText != _T('>') && *pstrText != _T('}') && *pstrText != _T(' ')) {
-                            pstrTemp = ::CharNext(pstrText);
-                            while (pstrText < pstrTemp) {
-                                sFontId += *pstrText++;
-                            }
+                            pstrText = ::CharNext(pstrText);
                         }
+
                         if (pstrTemp != pstrText) {
+                            while (pstrTemp < pstrText) sFontId += *pstrTemp++;
+
                             TFontInfo* pFontInfo = pManager->GetFontInfo(sFontId);
                             aFontArray.Add(pFontInfo);
                             pTm = &pFontInfo->tm;

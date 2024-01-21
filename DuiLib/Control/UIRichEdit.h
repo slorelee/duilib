@@ -145,7 +145,7 @@ protected:
     bool m_bReadOnly;
     bool m_bWordWrap;
     DWORD m_dwTextColor;
-    LPCTSTR m_iFont;
+    CDuiString m_iFont;
     int m_iLimitText;
     LONG m_lTwhStyle;
 	bool m_bDrawCaret;

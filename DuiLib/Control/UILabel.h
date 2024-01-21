@@ -85,7 +85,7 @@ namespace DuiLib
 		LPWSTR  m_pWideText;
 		DWORD	m_dwTextColor;
 		DWORD	m_dwDisabledTextColor;
-		LPCTSTR	m_iFont;
+        CDuiString	m_iFont;
 		UINT	m_uTextStyle;
 		RECT	m_rcTextPadding;
 		bool	m_bShowHtml;

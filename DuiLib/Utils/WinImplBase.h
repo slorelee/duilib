@@ -20,7 +20,7 @@ namespace DuiLib
 		, public IDialogBuilderCallback
 	{
 	public:
-		WindowImplBase(){};
+		WindowImplBase():m_bUseSystemCaption(FALSE) {};
 		virtual ~WindowImplBase(){};
 		virtual void InitWindow(){};
 		virtual void OnFinalMessage( HWND hWnd );
@@ -39,6 +39,8 @@ namespace DuiLib
 		static LPBYTE m_lpResourceZIPBuffer;
 
 	public:
+		BOOL m_bUseSystemCaption;
+		virtual BOOL GetUseSystemCaption() { return FALSE; };
 		virtual UINT GetClassStyle() const;
 		virtual UILIB_RESOURCETYPE GetResourceType() const;
 		virtual CDuiString GetZIPFileName() const;
@@ -58,6 +60,7 @@ namespace DuiLib
 		virtual LRESULT OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 #endif
 		virtual LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+		virtual LRESULT OnSizing(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		virtual LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		virtual LRESULT OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		virtual LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

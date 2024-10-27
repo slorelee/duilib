@@ -89,6 +89,10 @@ LRESULT WindowImplBase::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 #if defined(WIN32) && !defined(UNDER_CE)
 LRESULT WindowImplBase::OnNcActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	if (m_bUseSystemCaption) {
+		bHandled = FALSE;
+		return 0;
+	}
 	if( ::IsIconic(*this) ) bHandled = FALSE;
 	return (wParam == 0) ? TRUE : FALSE;
 }
@@ -96,7 +100,9 @@ LRESULT WindowImplBase::OnNcActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPar
 LRESULT WindowImplBase::OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	LPRECT pRect=NULL;
-
+	if (m_bUseSystemCaption) {
+		bHandled = FALSE;
+	}
 	if ( wParam == TRUE)
 	{
 		LPNCCALCSIZE_PARAMS pParam = (LPNCCALCSIZE_PARAMS)lParam;
@@ -124,13 +130,20 @@ LRESULT WindowImplBase::OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	return 0;
 }
 
-LRESULT WindowImplBase::OnNcPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT WindowImplBase::OnNcPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	if (m_bUseSystemCaption) {
+		bHandled = FALSE;
+	}
 	return 0;
 }
 
 LRESULT WindowImplBase::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if (m_bUseSystemCaption) {
+		bHandled = FALSE;
+		return 0;
+	}
 	POINT pt; pt.x = GET_X_LPARAM(lParam); pt.y = GET_Y_LPARAM(lParam);
 	::ScreenToClient(*this, &pt);
 
@@ -210,6 +223,10 @@ LRESULT WindowImplBase::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 LRESULT WindowImplBase::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if (m_bUseSystemCaption) {
+		bHandled = FALSE;
+		return 0;
+	}
 	SIZE szRoundCorner = m_PaintManager.GetRoundCorner();
 #if defined(WIN32) && !defined(UNDER_CE)
 	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
@@ -222,6 +239,15 @@ LRESULT WindowImplBase::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 		::DeleteObject(hRgn);
 	}
 #endif
+	bHandled = FALSE;
+	return 0;
+}
+
+LRESULT WindowImplBase::OnSizing(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if (m_bUseSystemCaption) {
+		RECT size_rect;
+	}
 	bHandled = FALSE;
 	return 0;
 }
@@ -264,12 +290,19 @@ LRESULT WindowImplBase::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 LRESULT WindowImplBase::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
-	styleValue &= ~WS_CAPTION;
-	::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	RECT rcClient;
-	::GetClientRect(*this, &rcClient);
-	::SetWindowPos(*this, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left, \
-		rcClient.bottom - rcClient.top, SWP_FRAMECHANGED);
+	m_bUseSystemCaption = GetUseSystemCaption();
+	if (m_bUseSystemCaption) {
+		RECT size_rect;
+		GetWindowRect(*this, &size_rect);
+		::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	} else {
+		styleValue &= ~WS_CAPTION;
+		::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+		RECT rcClient;
+		::GetClientRect(*this, &rcClient);
+		::SetWindowPos(*this, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left, \
+			rcClient.bottom - rcClient.top, SWP_FRAMECHANGED);
+	}
 
 	m_PaintManager.Init(m_hWnd);
 	m_PaintManager.AddPreMessageFilter(this);
@@ -394,6 +427,7 @@ LRESULT WindowImplBase::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSEWHEEL:		lRes = OnMouseWheel(uMsg, wParam, lParam, bHandled); break;
 #endif
 	case WM_SIZE:			lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
+	case WM_SIZING:			lRes = OnSizing(uMsg, wParam, lParam, bHandled); break;
 	case WM_CHAR:		lRes = OnChar(uMsg, wParam, lParam, bHandled); break;
 	case WM_SYSCOMMAND:		lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
 	case WM_KEYDOWN:		lRes = OnKeyDown(uMsg, wParam, lParam, bHandled); break;
@@ -424,7 +458,9 @@ LRESULT WindowImplBase::HandleCustomMessage(UINT uMsg, WPARAM wParam, LPARAM lPa
 LONG WindowImplBase::GetStyle()
 {
 	LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
-	styleValue &= ~WS_CAPTION;
+	if (!m_bUseSystemCaption) {
+		styleValue &= ~WS_CAPTION;
+	}
 
 	return styleValue;
 }

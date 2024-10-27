@@ -243,7 +243,7 @@ void CDialogBuilder::GetLastErrorLocation(LPTSTR pstrSource, SIZE_T cchMax) cons
 #define DEFAULT_STYLE_NAME_SEPARATOR    _T(':')    /* 控件的style属性中的风格名和参数列表的分隔符 */
 
 template<typename CControlNode>
-static void CDialogBuilder::ProcessAttributes(CPaintManagerUI* pManager, LPCTSTR pstrClass, CMarkupNode* pNode, CControlNode* pControlNode)
+static void ProcessAttributes(CPaintManagerUI* pManager, LPCTSTR pstrClass, CMarkupNode* pNode, CControlNode* pControlNode)
 {
     // 若有控件默认配置先初始化默认属性
     if( pManager ) {

@@ -9,6 +9,9 @@
 
 #include <windows.h>
 #include <objbase.h>
+#ifdef _DEBUG
+#include <crtdbg.h>
+#endif // _DEBUG
 
 #include "..\DuiLib\UIlib.h"
 

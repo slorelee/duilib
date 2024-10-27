@@ -3,6 +3,16 @@
 
 #include "stdafx.h"
 
+int _CrtDbgReportW(
+	int reportType,
+	const wchar_t *filename,
+	int linenumber,
+	const wchar_t *moduleName,
+	const wchar_t *format ...
+) {
+	return 0;
+}
+
 #ifndef _DWMAPI_H_
 typedef struct DWM_BLURBEHIND
 {

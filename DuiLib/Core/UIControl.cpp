@@ -948,40 +948,34 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("bkcolor")) == 0 || _tcscmp(pstrName, _T("bkcolor1")) == 0 ) {
         while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetBkColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("bkcolor2")) == 0 ) {
         while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetBkColor2(clrColor);
     }
     else if( _tcscmp(pstrName, _T("bkcolor3")) == 0 ) {
         while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetBkColor3(clrColor);
     }
     else if( _tcscmp(pstrName, _T("bordercolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetBorderColor(clrColor);
     }
 	else if (_tcscmp(pstrName, _T("hotbordercolor")) == 0) {
 		if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		DWORD clrColor = CDuiString::ToColor(pstrValue);
 		SetHotBorderColor(clrColor);
 	}
     else if( _tcscmp(pstrName, _T("focusbordercolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetFocusBorderColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("colorhsl")) == 0 ) SetColorHSL(_tcscmp(pstrValue, _T("true")) == 0);

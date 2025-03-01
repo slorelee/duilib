@@ -886,54 +886,46 @@ void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     }
     else if( _tcscmp(pstrName, _T("itemtextcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetItemTextColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itembkcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetItemBkColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itembkimage")) == 0 ) SetItemBkImage(pstrValue);
     else if( _tcscmp(pstrName, _T("itemaltbk")) == 0 ) SetAlternateBk(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("itemselectedtextcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetSelectedItemTextColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemselectedbkcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetSelectedItemBkColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemselectedimage")) == 0 ) SetSelectedItemImage(pstrValue);
     else if( _tcscmp(pstrName, _T("itemhottextcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetHotItemTextColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemhotbkcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetHotItemBkColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemhotimage")) == 0 ) SetHotItemImage(pstrValue);
     else if( _tcscmp(pstrName, _T("itemdisabledtextcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetDisabledItemTextColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemdisabledbkcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetDisabledItemBkColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemdisabledimage")) == 0 ) SetDisabledItemImage(pstrValue);
@@ -942,8 +934,7 @@ void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     }
     else if( _tcscmp(pstrName, _T("itemvlinecolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetItemVLineColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemhlinesize")) == 0 ) {
@@ -951,8 +942,7 @@ void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     }
     else if( _tcscmp(pstrName, _T("itemhlinecolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetItemHLineColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemshowhtml")) == 0 ) SetItemShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
@@ -1679,8 +1669,7 @@ void CListHeaderItemUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(pstrValue);
     else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetTextColor(clrColor);
     }
 	else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
@@ -1700,8 +1689,7 @@ void CListHeaderItemUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("sepwidth")) == 0 ) SetSepWidth(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("sepcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetSepColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("sepimage")) == 0 ) SetSepImage(pstrValue);

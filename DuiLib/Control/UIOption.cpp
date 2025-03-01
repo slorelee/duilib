@@ -189,14 +189,12 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
 		else if( _tcscmp(pstrName, _T("selectedbkcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetSelectedBkColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("selectedtextcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetSelectedTextColor(clrColor);
 		}
 		else CButtonUI::SetAttribute(pstrName, pstrValue);

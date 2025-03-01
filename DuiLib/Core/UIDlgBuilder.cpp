@@ -76,7 +76,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                     }
                     else if( _tcsicmp(pstrName, _T("mask")) == 0 ) {
                         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-                        mask = _tcstoul(pstrValue, &pstr, 16);
+                        mask = CDuiString::ToColor(pstrValue);
                     }
                     else if( _tcsicmp(pstrName, _T("shared")) == 0 ) {
                         shared = (_tcsicmp(pstrValue, _T("true")) == 0);

@@ -384,29 +384,25 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("hotbkcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetHotBkColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("hottextcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetHotTextColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("pushedtextcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetPushedTextColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("focusedtextcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetFocusedTextColor(clrColor);
 		}
 		else CLabelUI::SetAttribute(pstrName, pstrValue);

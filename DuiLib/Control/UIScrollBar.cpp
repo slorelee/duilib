@@ -880,8 +880,7 @@ void CScrollBarUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	if( _tcscmp(pstrName, _T("button1color")) == 0 ) {
 		while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
 		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		DWORD clrColor = CDuiString::ToColor(pstrValue);
 		SetButton1Color(clrColor);
 	}
 	else if( _tcscmp(pstrName, _T("button1normalimage")) == 0 ) SetButton1NormalImage(pstrValue);
@@ -891,8 +890,7 @@ void CScrollBarUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else if( _tcscmp(pstrName, _T("button2color")) == 0 ) {
 		while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
 		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		DWORD clrColor = CDuiString::ToColor(pstrValue);
 		SetButton2Color(clrColor);
 	}
 	else if( _tcscmp(pstrName, _T("button2normalimage")) == 0 ) SetButton2NormalImage(pstrValue);
@@ -902,8 +900,7 @@ void CScrollBarUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else if( _tcscmp(pstrName, _T("thumbcolor")) == 0 ) {
 		while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
 		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-		LPTSTR pstr = NULL;
-		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		DWORD clrColor = CDuiString::ToColor(pstrValue);
 		SetThumbColor(clrColor);
 	}
 	else if( _tcscmp(pstrName, _T("thumbnormalimage")) == 0 ) SetThumbNormalImage(pstrValue);

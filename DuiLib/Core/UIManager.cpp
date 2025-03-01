@@ -3186,32 +3186,27 @@ void CPaintManagerUI::SetWindowAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     } 
     else if( _tcsicmp(pstrName, _T("disabledfontcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetDefaultDisabledColor(clrColor);
     } 
     else if( _tcsicmp(pstrName, _T("defaultfontcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetDefaultFontColor(clrColor);
     }
     else if( _tcsicmp(pstrName, _T("linkfontcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetDefaultLinkFontColor(clrColor);
     } 
     else if( _tcsicmp(pstrName, _T("linkhoverfontcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetDefaultLinkHoverFontColor(clrColor);
     } 
     else if( _tcsicmp(pstrName, _T("selectedcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetDefaultSelectedBkColor(clrColor);
     } 
     else 

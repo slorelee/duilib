@@ -605,10 +605,9 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 
     BYTE bColorBits[4] = { 0 };
     if (type && _tcscmp(type, RES_TYPE_COLOR) == 0) {
-        LPTSTR pstr = NULL;
         LPCTSTR pstrValue = bitmap.m_lpstr;
         if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
 
         pImage = (LPBYTE)&clrColor;
         /* BGRA -> RGBA */

@@ -2281,8 +2281,7 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
         while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-        LPTSTR pstr = NULL;
-        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+        DWORD clrColor = CDuiString::ToColor(pstrValue);
         SetTextColor(clrColor);
     }
 	else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {

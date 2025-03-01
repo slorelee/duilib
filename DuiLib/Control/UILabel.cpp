@@ -291,14 +291,12 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(pstrValue);
 		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetTextColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("disabledtextcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetDisabledTextColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
@@ -327,26 +325,22 @@ namespace DuiLib
 		}
 		else if( _tcscmp(pstrName, _T("textcolor1")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetTextColor1(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("textshadowcolora")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetTextShadowColorA(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("textshadowcolorb")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetTextShadowColorB(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("strokecolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-			LPTSTR pstr = NULL;
-			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetStrokeColor(clrColor);
 		}
 		else CControlUI::SetAttribute(pstrName, pstrValue);

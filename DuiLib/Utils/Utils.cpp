@@ -446,6 +446,14 @@ namespace DuiLib
         return m_pstr;
     }
 
+	DWORD CDuiString::ToColor(LPCTSTR pstrValue)
+	{
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		if (clrColor < 0x01000000) clrColor += 0xFF000000;
+		return clrColor;
+	}
+
 	int CDuiString::GetLength() const
 	{ 
 		return (int) _tcslen(m_pstr); 

@@ -84,6 +84,7 @@ namespace DuiLib
         CDuiString(LPCTSTR lpsz, int nLen = -1);
         ~CDuiString();
         CDuiString ToString();
+		static DWORD ToColor(LPCTSTR pstrValue);
 
         void Empty();
         int GetLength() const;

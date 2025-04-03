@@ -620,34 +620,32 @@ void CComboUI::DoEvent(TEventUI& event)
     if( event.Type == UIEVENT_KEYDOWN )
     {
         if (IsKeyboardEnabled() && IsEnabled()) {
+            bool bDownward = true;
+            int iOldSel = m_iCurSel;
             switch( event.chKey ) {
             case VK_F4:
                 Activate();
+                break;
             case VK_UP:
-                SetSelectCloseFlag(false);
-                SelectItem(FindSelectable(m_iCurSel - 1, false));
-                SetSelectCloseFlag(true);
-            case VK_DOWN:
-                SetSelectCloseFlag(false);
-                SelectItem(FindSelectable(m_iCurSel + 1, true));
-                SetSelectCloseFlag(true);
             case VK_PRIOR:
-                SetSelectCloseFlag(false);
-                SelectItem(FindSelectable(m_iCurSel - 1, false));
-                SetSelectCloseFlag(true);
+                bDownward = false;
+                break;
+            case VK_DOWN:
             case VK_NEXT:
-                SetSelectCloseFlag(false);
-                SelectItem(FindSelectable(m_iCurSel + 1, true));
-                SetSelectCloseFlag(true);
+                break;
             case VK_HOME:
-                SetSelectCloseFlag(false);
-                SelectItem(FindSelectable(0, false));
-                SetSelectCloseFlag(true);
+                bDownward = false;
+                iOldSel = 1;
+                break;
             case VK_END:
-                SetSelectCloseFlag(false);
-                SelectItem(FindSelectable(GetCount() - 1, true));
-                SetSelectCloseFlag(true);
+                iOldSel = GetCount() - 2;
+                break;
+            default:
+                return;
             }
+            SetSelectCloseFlag(false);
+            SelectItem(FindSelectable(iOldSel + (bDownward ? 1 : -1), bDownward));
+            SetSelectCloseFlag(true);
             return;
         }
     }

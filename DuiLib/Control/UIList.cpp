@@ -2375,6 +2375,21 @@ void CListTextElementUI::SetText(int iIndex, LPCTSTR pstrText)
     Invalidate();
 }
 
+void CListTextElementUI::SetText(LPCTSTR pstrText)
+{
+    int i = 0, iStart = 0, iPos = 0;
+    CDuiString texts = pstrText;
+    texts.Append(_T("|"));
+    iPos = texts.Find(_T('|'));
+
+    while (iPos >= 0) {
+        LPCTSTR pTextItem = texts.Mid(iStart, iPos - iStart);
+        SetText(i++, pTextItem);
+        iStart = iPos + 1;
+        iPos = texts.Find(_T('|'), iStart);
+    }
+}
+
 void CListTextElementUI::SetOwner(CControlUI* pOwner)
 {
     if (pOwner != NULL) {

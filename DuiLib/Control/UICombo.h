@@ -117,6 +117,9 @@ public:
     void PaintText(HDC hDC);
     void PaintStatusImage(HDC hDC);
 
+    CComboWnd* GetComboWindow();
+    UINT GetButtonState();
+
 protected:
     CComboWnd* m_pWindow;
 

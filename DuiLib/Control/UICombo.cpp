@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "UICombo.h"
 
 namespace DuiLib {
 
@@ -1227,6 +1228,16 @@ void CComboUI::PaintStatusImage(HDC hDC)
     }
 
     DrawImage(hDC, m_diNormal);
+}
+
+CComboWnd *CComboUI::GetComboWindow()
+{
+    return m_pWindow;
+}
+
+UINT CComboUI::GetButtonState()
+{
+    return m_uButtonState;
 }
 
 void CComboUI::PaintText(HDC hDC)

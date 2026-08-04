@@ -3322,6 +3322,7 @@ void CPaintManagerUI::AddMultiLanguageString(LPCTSTR pstrId, LPCTSTR pStrMultiLa
 	CDuiString* pMultiLanguage = new CDuiString(pStrMultiLanguage);
 	if (pMultiLanguage != NULL)
 	{
+        pMultiLanguage->Replace(TEXT("{\\n}"), TEXT("\r\n"));
 		CDuiString* pOldMultiLanguage = static_cast<CDuiString*>(m_SharedResInfo.m_MultiLanguageHash.Set(pstrId, (LPVOID)pMultiLanguage));
 		if (pOldMultiLanguage) delete pOldMultiLanguage;
 	}

@@ -1173,6 +1173,73 @@ bool CControlUI::Paint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 
 bool CControlUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
+    int width = m_rcItem.right - m_rcItem.left;
+    int height = m_rcItem.bottom - m_rcItem.top;
+    if (_tcscmp(GetClass(), _T("Label")) == 0 && m_sUserData == _T("image-mask:round-antialias") &&
+        width > 0 && height > 0 && m_cxyBorderRound.cx > 0 && m_cxyBorderRound.cy > 0 &&
+        DrawImage(NULL, m_diBk)) {
+        BITMAPINFO bitmapInfo = { 0 };
+        bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bitmapInfo.bmiHeader.biWidth = width;
+        bitmapInfo.bmiHeader.biHeight = -height;
+        bitmapInfo.bmiHeader.biPlanes = 1;
+        bitmapInfo.bmiHeader.biBitCount = 32;
+        bitmapInfo.bmiHeader.biCompression = BI_RGB;
+        DWORD *pixels = NULL;
+        HBITMAP bitmap = CreateDIBSection(hDC, &bitmapInfo, DIB_RGB_COLORS, reinterpret_cast<void **>(&pixels), NULL, 0);
+        HDC memoryDC = CreateCompatibleDC(hDC);
+        if (bitmap && memoryDC && pixels) {
+            HGDIOBJ oldBitmap = SelectObject(memoryDC, bitmap);
+            if (oldBitmap && oldBitmap != HGDI_ERROR) {
+                ZeroMemory(pixels, static_cast<size_t>(width) * height * sizeof(DWORD));
+                RECT imageRect = { 0, 0, width, height };
+                CRenderEngine::DrawImage(memoryDC, m_pManager, imageRect, imageRect, m_diBk);
+                GdiFlush();
+                double radiusX = (m_cxyBorderRound.cx < width ? m_cxyBorderRound.cx : width) / 2.0;
+                double radiusY = (m_cxyBorderRound.cy < height ? m_cxyBorderRound.cy : height) / 2.0;
+                for (int row = 0; row < height; ++row) {
+                    for (int column = 0; column < width; ++column) {
+                        unsigned int coverage = 64;
+                        if ((column < radiusX || column + 1 > width - radiusX) &&
+                            (row < radiusY || row + 1 > height - radiusY)) {
+                            coverage = 0;
+                            for (int sampleY = 0; sampleY < 8; ++sampleY) {
+                                for (int sampleX = 0; sampleX < 8; ++sampleX) {
+                                    double samplePosX = column + (sampleX + 0.5) / 8.0;
+                                    double samplePosY = row + (sampleY + 0.5) / 8.0;
+                                    double x = samplePosX < radiusX ? (samplePosX - radiusX) / radiusX :
+                                        (samplePosX > width - radiusX ? (samplePosX - (width - radiusX)) / radiusX : 0.0);
+                                    double y = samplePosY < radiusY ? (samplePosY - radiusY) / radiusY :
+                                        (samplePosY > height - radiusY ? (samplePosY - (height - radiusY)) / radiusY : 0.0);
+                                    if (x * x + y * y <= 1.0) ++coverage;
+                                }
+                            }
+                        }
+                        DWORD pixel = pixels[row * width + column];
+                        if (!m_diBk.pImageInfo->bAlpha) pixel |= 0xff000000;
+                        DWORD alpha = ((pixel >> 24) & 0xff) * coverage / 64;
+                        DWORD red = ((pixel >> 16) & 0xff) * coverage / 64;
+                        DWORD green = ((pixel >> 8) & 0xff) * coverage / 64;
+                        DWORD blue = (pixel & 0xff) * coverage / 64;
+                        pixels[row * width + column] = (alpha << 24) | (red << 16) | (green << 8) | blue;
+                    }
+                }
+                PaintBkColor(hDC);
+                RECT source = { 0, 0, width, height };
+                RECT corners = { 0, 0, 0, 0 };
+                SelectObject(memoryDC, oldBitmap);
+                CRenderEngine::DrawImage(hDC, bitmap, m_rcItem, m_rcPaint, source, corners, true);
+                PaintStatusImage(hDC);
+                PaintText(hDC);
+                PaintBorder(hDC);
+                DeleteDC(memoryDC);
+                DeleteObject(bitmap);
+                return true;
+            }
+        }
+        if (memoryDC) DeleteDC(memoryDC);
+        if (bitmap) DeleteObject(bitmap);
+    }
     // 绘制循序：背景颜色->背景图->状态图->文本->边框
     if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ) {
         CRenderClip roundClip;

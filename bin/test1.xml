@@ -26,6 +26,42 @@
 		<RichEdit name="testrichedit1" bordercolor="#FF0000" bordersize="2" borderround="8,8" inset="4,2,4,2" bkcolor="#FFE2E5EA" bkcolor2="#FF00F5DA" bkcolor3="#FFF2F5FA" font="1" multiline="false" rich="false" hscrollbar="true" autohscroll="true"/>
 		<DateTime name="DateTime" width="200" height="30" bkcolor="#FFE2E5EA" padding="0,5,0,0" />
 		<CheckBox name="CheckBox1" width="20" height="20" bkcolor="#FFEA679F" />
+
+        <!-- 下拉菜单 -->
+        <Label name="lblCombo" text="下拉菜单:"  />
+        <ComboBox name="cmbOptions" style="ct-combo"  width="300" height="32" keyboard="true" wheel="true" >
+            <ListLabelElement name="option1" text="选项 1" />
+            <ListLabelElement name="option2" text="选项 2" selected="true" />
+            <ListLabelElement name="option3" text="选项 3" />
+        </ComboBox>
+
+        <List name="list_data" style="ct-list" >
+            <ListHeader >
+                <ListHeaderItem text="序号" width="50" align="left" textpadding="15,0,0,0" />
+                <ListHeaderItem text="磁盘"  width="100" align="left" textpadding="15,0,0,0" />
+                <ListHeaderItem text="分区"  width="100" align="left" textpadding="15,0,0,0" />
+                <ListHeaderItem text="容量"  width="100" align="left" textpadding="15,0,0,0" />
+            </ListHeader>
+
+            <ListTextElement text="0:1|Data|D:|1.8 TB" />
+            <ListLabelElement text="X:" />
+
+            <ListContainerElement height="40" >
+                <HorizontalLayout>
+                    <!--序号-->
+                    <Label text="1:1" textpadding="15,0,0,0" valign="center" height="40"  textcolor="#FF5E5E5E" disabledtextcolor="#FFA7A6AA" />
+                    <Control width="1" bkcolor="#FFCACACA"/>
+                    <!--磁盘-->
+                    <Label  text="Disk 1" textpadding="15,0,0,0" valign="center" height="40" textcolor="#FF5E5E5E" disabledtextcolor="#FFA7A6AA" />
+                    <Control width="5" bkcolor="#FFACACAC"/>
+                    <!--分区-->
+                    <Label  text="C:" align="right"  textcolor="#FF0000FF" disabledtextcolor="#FFA7A6AA" /> 
+                    <!--容量-->
+                    <Label  text="256.8 GB" align="right" textcolor="#FF5E5E5E" disabledtextcolor="#FFFFEEAA" />
+                </HorizontalLayout>
+            </ListContainerElement>
+        </List>
+
 		<ComboBox name="ComboBox1" width="200" height="30" bkcolor="#FFEA679F" bordersize="1" bordercolor="0xFFFF0000">
 			<ListLabelElement text="11111111111111"/>
 			<ListLabelElement text="22222222222222"/>

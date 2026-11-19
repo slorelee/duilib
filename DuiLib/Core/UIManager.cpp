@@ -2417,7 +2417,19 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 
 HFONT CPaintManagerUI::AddFont(LPCTSTR pStrId, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared)
 {
-    nSize = ScaleDpi(nSize);
+    return AddFontPhysical(pStrId, pStrFontName, ScaleDpi(nSize), bBold, bUnderline, bItalic, bShared);
+}
+
+HFONT CPaintManagerUI::AddFontPhysical(int id, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic)
+{
+    TCHAR idBuffer[16];
+    ::ZeroMemory(idBuffer, sizeof(idBuffer));
+    _itot(id, idBuffer, 10);
+    return AddFontPhysical(idBuffer, pStrFontName, nSize, bBold, bUnderline, bItalic);
+}
+
+HFONT CPaintManagerUI::AddFontPhysical(LPCTSTR pStrId, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared)
+{
     if (m_nDpiScale != 1000) bShared = false;
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);

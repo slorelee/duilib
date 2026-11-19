@@ -290,6 +290,8 @@ public:
     DWORD GetCustomFontCount(bool bShared = false) const;
     HFONT AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool  bShared = false);
     HFONT AddFont(LPCTSTR pStrId, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared = false);
+    HFONT AddFontPhysical(int id, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
+    HFONT AddFontPhysical(LPCTSTR pStrId, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared = false);
     HFONT GetFont(LPCTSTR pStrId);
     HFONT GetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
 	int GetFontIndex(HFONT hFont, bool bShared = false);

@@ -1701,7 +1701,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( chrTag == _T('a') && pFontInfo->bUnderline == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
 						if( hFont == NULL ) {
-							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
+							hFont = pManager->AddFontPhysical(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
 							g_iFontID += 1;
 						}
                         pFontInfo = pManager->GetFontInfo(hFont);
@@ -1722,7 +1722,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( pFontInfo->bBold == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic);
 						if( hFont == NULL ) {
-							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic);
+							hFont = pManager->AddFontPhysical(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic);
 							g_iFontID += 1;
 						}
                         pFontInfo = pManager->GetFontInfo(hFont);
@@ -1804,7 +1804,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         if( sFontAttr.Find(_T("bold")) >= 0 ) bBold = true;
                         if( sFontAttr.Find(_T("underline")) >= 0 ) bUnderline = true;
                         if( sFontAttr.Find(_T("italic")) >= 0 ) bItalic = true;
-                        HFONT hFont = pManager->GetFont(sFontName, iFontSize, bBold, bUnderline, bItalic);
+                        HFONT hFont = pManager->GetFont(sFontName, pManager->ScaleDpi(iFontSize), bBold, bUnderline, bItalic);
 						if( hFont == NULL ) {
 							hFont = pManager->AddFont(g_iFontID, sFontName, iFontSize, bBold, bUnderline, bItalic);
 							g_iFontID += 1;
@@ -1840,7 +1840,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         if( pFontInfo->bItalic == false ) {
                             HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true);
 							if( hFont == NULL ) {
-								hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true);
+								hFont = pManager->AddFontPhysical(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true);
 								g_iFontID += 1;
 							}
                             pFontInfo = pManager->GetFontInfo(hFont);
@@ -2007,7 +2007,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( pFontInfo->bUnderline == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
 						if( hFont == NULL ) {
-							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
+							hFont = pManager->AddFontPhysical(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
 							g_iFontID += 1;
 						}
                         pFontInfo = pManager->GetFontInfo(hFont);

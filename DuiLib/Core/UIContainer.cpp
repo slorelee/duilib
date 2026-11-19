@@ -535,6 +535,7 @@ namespace DuiLib
 			m_pVerticalScrollBar->SetScrollRange(0);
 			m_pVerticalScrollBar->SetOwner(this);
 			m_pVerticalScrollBar->SetManager(m_pManager, NULL, false);
+			if( m_pManager ) m_pVerticalScrollBar->SetFixedWidth(m_pManager->ScaleDpi(m_pVerticalScrollBar->GetFixedWidth()));
 			if ( m_pManager ) {
 				CDuiStringPtrMap* pDefautAttrList = m_pManager->GetDefaultAttributeList(_T("VScrollBar"));
 				if( pDefautAttrList ) {
@@ -553,6 +554,7 @@ namespace DuiLib
 			m_pHorizontalScrollBar->SetHorizontal(true);
 			m_pHorizontalScrollBar->SetOwner(this);
 			m_pHorizontalScrollBar->SetManager(m_pManager, NULL, false);
+			if( m_pManager ) m_pHorizontalScrollBar->SetFixedHeight(m_pManager->ScaleDpi(m_pHorizontalScrollBar->GetFixedHeight()));
 			if ( m_pManager ) {
 				CDuiStringPtrMap* pDefautAttrList = m_pManager->GetDefaultAttributeList(_T("HScrollBar"));
 				if( pDefautAttrList ) {

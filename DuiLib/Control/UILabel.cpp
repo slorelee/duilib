@@ -14,6 +14,7 @@ namespace DuiLib
 	}
 
 	CLabelUI::CLabelUI() : 
+		m_bAutoWidth(false),
 		m_pWideText(0),
 		m_uTextStyle(DT_VCENTER|DT_SINGLELINE), 
 		m_dwTextColor(0), 
@@ -86,8 +87,10 @@ namespace DuiLib
 
 	void CLabelUI::SetText(LPCTSTR pstrText)
 	{
+		bool changed = m_sText != pstrText;
 		CControlUI::SetText(pstrText);
         m_bNeedEstimateSize = true;
+		if( changed && m_bAutoWidth ) UpdateAutoWidth();
 		if( m_EnableEffect) {
 #ifdef _UNICODE
 			m_pWideText = (LPWSTR)m_sText.GetData();
@@ -154,6 +157,7 @@ namespace DuiLib
 	{
 		m_iFont = id;
         m_bNeedEstimateSize = true;
+		if( m_bAutoWidth ) UpdateAutoWidth();
 		Invalidate();
 	}
 
@@ -171,6 +175,7 @@ namespace DuiLib
 	{
 		m_rcTextPadding = rc;
         m_bNeedEstimateSize = true;
+		if( m_bAutoWidth ) UpdateAutoWidth();
 		Invalidate();
 	}
 
@@ -185,9 +190,28 @@ namespace DuiLib
 
 		m_bShowHtml = bShowHtml;
         m_bNeedEstimateSize = true;
+		if( m_bAutoWidth ) UpdateAutoWidth();
 		Invalidate();
 	}
 
+	void CLabelUI::UpdateAutoWidth()
+	{
+		if( !m_pManager || !m_pManager->GetPaintDC() ) return;
+		RECT rcText = { 0, 0, 0, 32767 };
+		if( !m_sText.IsEmpty() ) {
+			rcText.right = 32767;
+			UINT style = DT_CALCRECT | DT_SINGLELINE | DT_NOPREFIX;
+			if( m_bShowHtml ) {
+				int nLinks = 0;
+				CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, m_iFont, style);
+			}
+			else CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, m_iFont, style);
+		}
+		int width = rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right;
+		width = MAX(width, GetMinWidth());
+		width = MIN(width, GetMaxWidth());
+		SetFixedWidth(MAX(1, width));
+	}
 	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
 	{
         if (m_cxyFixed.cx > 0 && m_cxyFixed.cy > 0) return m_cxyFixed;
@@ -255,7 +279,11 @@ namespace DuiLib
 
 	void CLabelUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	{
-		if( _tcscmp(pstrName, _T("align")) == 0 ) {
+		if( _tcscmp(pstrName, _T("autowidth")) == 0 ) {
+			m_bAutoWidth = _tcscmp(pstrValue, _T("true")) == 0;
+			if( m_bAutoWidth ) UpdateAutoWidth();
+		}
+		else if( _tcscmp(pstrName, _T("align")) == 0 ) {
 			if( _tcsstr(pstrValue, _T("left")) != NULL ) {
 				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
 				m_uTextStyle |= DT_LEFT;
@@ -343,7 +371,10 @@ namespace DuiLib
 			DWORD clrColor = CDuiString::ToColor(pstrValue);
 			SetStrokeColor(clrColor);
 		}
-		else CControlUI::SetAttribute(pstrName, pstrValue);
+		else {
+			CControlUI::SetAttribute(pstrName, pstrValue);
+			if( m_bAutoWidth && (_tcscmp(pstrName, _T("minwidth")) == 0 || _tcscmp(pstrName, _T("maxwidth")) == 0 || _tcscmp(pstrName, _T("width")) == 0) ) UpdateAutoWidth();
+		}
 	}
 
 	void CLabelUI::PaintText(HDC hDC)

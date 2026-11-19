@@ -82,6 +82,8 @@ namespace DuiLib
 #endif
 	
 	protected:
+		void UpdateAutoWidth();
+		bool m_bAutoWidth;
 		LPWSTR  m_pWideText;
 		DWORD	m_dwTextColor;
 		DWORD	m_dwDisabledTextColor;

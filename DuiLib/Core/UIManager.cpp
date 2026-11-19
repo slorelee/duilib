@@ -92,6 +92,7 @@ CDuiPtrArray CPaintManagerUI::m_aPreMessages;
 CDuiPtrArray CPaintManagerUI::m_aPlugins;
 
 CPaintManagerUI::CPaintManagerUI() :
+m_nDpiScale(1000),
 m_hWndPaint(NULL),
 m_hDcPaint(NULL),
 m_hDcOffscreen(NULL),
@@ -174,6 +175,36 @@ m_bLayeredChanged(false)
 	::ZeroMemory(&m_rcLayeredInset, sizeof(m_rcLayeredInset));
 	::ZeroMemory(&m_rcLayeredUpdate, sizeof(m_rcLayeredUpdate));
     m_ptLastMousePos.x = m_ptLastMousePos.y = -1;
+}
+
+void CPaintManagerUI::SetDpiScale(float scale)
+{
+    if (scale <= 0.0f) scale = 1.0f;
+    m_nDpiScale = static_cast<int>(scale * 1000.0f + 0.5f);
+    if (m_nDpiScale == 1000 || !m_ResInfo.m_DefaultFontInfo.sFontName.IsEmpty() ||
+        m_SharedResInfo.m_DefaultFontInfo.hFont == NULL) return;
+
+    TFontInfo fontInfo = m_SharedResInfo.m_DefaultFontInfo;
+    LOGFONT font = { 0 };
+    if (::GetObject(fontInfo.hFont, sizeof(font), &font) == 0) return;
+    int baseSize = fontInfo.iSize > 0 ? fontInfo.iSize : -font.lfHeight;
+    font.lfHeight = -ScaleDpi(baseSize);
+    HFONT scaledFont = ::CreateFontIndirect(&font);
+    if (scaledFont == NULL) return;
+    m_ResInfo.m_DefaultFontInfo = fontInfo;
+    m_ResInfo.m_DefaultFontInfo.hFont = scaledFont;
+    m_ResInfo.m_DefaultFontInfo.iSize = ScaleDpi(baseSize);
+    ::ZeroMemory(&m_ResInfo.m_DefaultFontInfo.tm, sizeof(m_ResInfo.m_DefaultFontInfo.tm));
+}
+
+int CPaintManagerUI::ScaleDpi(int value) const
+{
+    return MulDiv(value, m_nDpiScale, 1000);
+}
+
+float CPaintManagerUI::GetDpiScale() const
+{
+    return m_nDpiScale / 1000.0f;
 }
 
 CPaintManagerUI::~CPaintManagerUI()
@@ -2321,6 +2352,8 @@ TFontInfo* CPaintManagerUI::GetDefaultFontInfo()
 
 void CPaintManagerUI::SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared)
 {
+    nSize = ScaleDpi(nSize);
+    if (m_nDpiScale != 1000) bShared = false;
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     _tcsncpy(lf.lfFaceName, pStrFontName, LF_FACESIZE);
@@ -2384,6 +2417,8 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 
 HFONT CPaintManagerUI::AddFont(LPCTSTR pStrId, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared)
 {
+    nSize = ScaleDpi(nSize);
+    if (m_nDpiScale != 1000) bShared = false;
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     _tcsncpy(lf.lfFaceName, pStrFontName, LF_FACESIZE);
@@ -3128,44 +3163,44 @@ void CPaintManagerUI::SetWindowAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
     if( _tcsicmp(pstrName, _T("size")) == 0 ) {
         LPTSTR pstr = NULL;
-        int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+        int cx = ScaleDpi(_tcstol(pstrValue, &pstr, 10)); ASSERT(pstr);
+        int cy = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
         SetInitSize(cx, cy);
     } 
     else if( _tcsicmp(pstrName, _T("sizebox")) == 0 ) {
         RECT rcSizeBox = { 0 };
         LPTSTR pstr = NULL;
-        rcSizeBox.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        rcSizeBox.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        rcSizeBox.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        rcSizeBox.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+        rcSizeBox.left = ScaleDpi(_tcstol(pstrValue, &pstr, 10)); ASSERT(pstr);
+        rcSizeBox.top = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
+        rcSizeBox.right = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
+        rcSizeBox.bottom = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
         SetSizeBox(rcSizeBox);
     }
     else if( _tcsicmp(pstrName, _T("caption")) == 0 ) {
         RECT rcCaption = { 0 };
         LPTSTR pstr = NULL;
-        rcCaption.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        rcCaption.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        rcCaption.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        rcCaption.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+        rcCaption.left = ScaleDpi(_tcstol(pstrValue, &pstr, 10)); ASSERT(pstr);
+        rcCaption.top = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
+        rcCaption.right = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
+        rcCaption.bottom = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
         SetCaptionRect(rcCaption);
     }
     else if( _tcsicmp(pstrName, _T("roundcorner")) == 0 ) {
         LPTSTR pstr = NULL;
-        int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+        int cx = ScaleDpi(_tcstol(pstrValue, &pstr, 10)); ASSERT(pstr);
+        int cy = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
         SetRoundCorner(cx, cy);
     } 
     else if( _tcsicmp(pstrName, _T("mininfo")) == 0 ) {
         LPTSTR pstr = NULL;
-        int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+        int cx = ScaleDpi(_tcstol(pstrValue, &pstr, 10)); ASSERT(pstr);
+        int cy = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
         SetMinInfo(cx, cy);
     }
     else if( _tcsicmp(pstrName, _T("maxinfo")) == 0 ) {
         LPTSTR pstr = NULL;
-        int cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        int cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr); 
+        int cx = ScaleDpi(_tcstol(pstrValue, &pstr, 10)); ASSERT(pstr);
+        int cy = ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
         SetMaxInfo(cx, cy);
     }
     else if( _tcsicmp(pstrName, _T("showdirty")) == 0 ) {

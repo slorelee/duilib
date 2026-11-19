@@ -42,7 +42,7 @@ typedef enum EVENTTYPE_UI
     UIEVENT_NOTIFY,
     UIEVENT_COMMAND,
     UIEVENT__LAST,
-};
+} EVENTTYPE_UI;
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -197,6 +197,9 @@ public:
 
 public:
     void Init(HWND hWnd, LPCTSTR pstrName = NULL);
+    void SetDpiScale(float scale);
+    int ScaleDpi(int value) const;
+    float GetDpiScale() const;
     bool GetKeepRes();
     void SetKeepRes(bool bKeep);
 	bool IsUpdateNeeded() const;
@@ -422,6 +425,7 @@ private:
 
 private:
 	CDuiString m_sName;
+    int m_nDpiScale;
     HWND m_hWndPaint;
     HDC m_hDcPaint;
     HDC m_hDcOffscreen;

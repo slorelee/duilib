@@ -925,10 +925,10 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     if( _tcscmp(pstrName, _T("pos")) == 0 ) {
         RECT rcPos = { 0 };
         LPTSTR pstr = NULL;
-        rcPos.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        rcPos.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        rcPos.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        rcPos.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+        rcPos.left = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstrValue, &pstr, 10)) : _tcstol(pstrValue, &pstr, 10); ASSERT(pstr);
+        rcPos.top = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+        rcPos.right = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+        rcPos.bottom = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
         SIZE szXY = {rcPos.left, rcPos.top};
         SetFixedXY(szXY);
 		//ASSERT(rcPos.right - rcPos.left >= 0);
@@ -939,10 +939,10 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("padding")) == 0 ) {
         RECT rcPadding = { 0 };
         LPTSTR pstr = NULL;
-        rcPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        rcPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        rcPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        rcPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+        rcPadding.left = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstrValue, &pstr, 10)) : _tcstol(pstrValue, &pstr, 10); ASSERT(pstr);
+        rcPadding.top = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+        rcPadding.right = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+        rcPadding.bottom = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
         SetPadding(rcPadding);
     }
     else if( _tcscmp(pstrName, _T("bkcolor")) == 0 || _tcscmp(pstrName, _T("bkcolor1")) == 0 ) {
@@ -983,16 +983,16 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		CDuiString nValue = pstrValue;
 		if(nValue.Find(',') < 0)
 		{
-			SetBorderSize(_ttoi(pstrValue));
+            SetBorderSize(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
 		}
 		else
 		{
 			RECT rcBorder = { 0 };
 			LPTSTR pstr = NULL;
-			rcBorder.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
-			rcBorder.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-			rcBorder.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-			rcBorder.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+            rcBorder.left = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstrValue, &pstr, 10)) : _tcstol(pstrValue, &pstr, 10); ASSERT(pstr);
+            rcBorder.top = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+            rcBorder.right = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+            rcBorder.bottom = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 			SetBorderSize(rcBorder);
 		}
 	}
@@ -1000,17 +1000,17 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("borderround")) == 0 ) {
         SIZE cxyRound = { 0 };
         LPTSTR pstr = NULL;
-        cxyRound.cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        cxyRound.cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);     
+        cxyRound.cx = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstrValue, &pstr, 10)) : _tcstol(pstrValue, &pstr, 10); ASSERT(pstr);
+        cxyRound.cy = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
         SetBorderRound(cxyRound);
     }
     else if( _tcscmp(pstrName, _T("bkimage")) == 0 ) SetBkImage(pstrValue);
-    else if( _tcscmp(pstrName, _T("width")) == 0 ) SetFixedWidth(_ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("height")) == 0 ) SetFixedHeight(_ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("minwidth")) == 0 ) SetMinWidth(_ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("minheight")) == 0 ) SetMinHeight(_ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("maxwidth")) == 0 ) SetMaxWidth(_ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("maxheight")) == 0 ) SetMaxHeight(_ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("width")) == 0 ) SetFixedWidth(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("height")) == 0 ) SetFixedHeight(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("minwidth")) == 0 ) SetMinWidth(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("minheight")) == 0 ) SetMinHeight(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("maxwidth")) == 0 ) SetMaxWidth(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("maxheight")) == 0 ) SetMaxHeight(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("name")) == 0 ) SetName(pstrValue);
     else if( _tcscmp(pstrName, _T("text")) == 0 ) SetText(pstrValue);
     else if( _tcscmp(pstrName, _T("tooltip")) == 0 ) SetToolTip(pstrValue);

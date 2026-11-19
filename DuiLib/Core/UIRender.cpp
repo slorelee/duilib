@@ -1228,10 +1228,10 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 					sImageName = sValue;
 				}
 				else if( sItem == _T("dest") ) {
-					drawInfo.rcDestOffset.left = _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
-					drawInfo.rcDestOffset.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-					drawInfo.rcDestOffset.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-					drawInfo.rcDestOffset.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+					drawInfo.rcDestOffset.left = pManager->ScaleDpi(_tcstol(sValue.GetData(), &pstr, 10)); ASSERT(pstr);
+					drawInfo.rcDestOffset.top = pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
+					drawInfo.rcDestOffset.right = pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
+					drawInfo.rcDestOffset.bottom = pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)); ASSERT(pstr);
 					if( g_imageRectStyle == STYLE_RECT_LTWH ) {
 						drawInfo.rcDestOffset.right += drawInfo.rcDestOffset.left;
 						drawInfo.rcDestOffset.bottom += drawInfo.rcDestOffset.top;

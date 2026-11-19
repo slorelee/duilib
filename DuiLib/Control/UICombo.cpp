@@ -210,6 +210,11 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if( uMsg == WM_CREATE ) {
 		m_pm.SetForceUseSharedRes(true);
+        TFontInfo* pDefaultFont = m_pOwner->GetManager()->GetDefaultFontInfo();
+        if( !pDefaultFont->sFontName.IsEmpty() && pDefaultFont->iSize > 0 ) {
+            m_pm.SetDefaultFont(pDefaultFont->sFontName, pDefaultFont->iSize, pDefaultFont->bBold, pDefaultFont->bUnderline, pDefaultFont->bItalic);
+        }
+        m_pm.SetDpiScale(m_pOwner->GetManager()->GetDpiScale());
         m_pm.Init(m_hWnd);
         // The trick is to add the items to the new container. Their owner gets
         // reassigned by this operation - which is why it is important to reassign

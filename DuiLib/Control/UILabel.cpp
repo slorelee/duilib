@@ -302,10 +302,10 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
 			RECT rcTextPadding = { 0 };
 			LPTSTR pstr = NULL;
-			rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-			rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-			rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-			rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+			rcTextPadding.left = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstrValue, &pstr, 10)) : _tcstol(pstrValue, &pstr, 10); ASSERT(pstr);
+			rcTextPadding.top = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+			rcTextPadding.right = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+			rcTextPadding.bottom = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 			SetTextPadding(rcTextPadding);
 		}
 		else if( _tcscmp(pstrName, _T("multiline")) == 0 ) SetMultiLine(_tcscmp(pstrValue, _T("true")) == 0);
@@ -319,8 +319,8 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("gradientlength")) == 0 ) SetGradientLength(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("shadowoffset")) == 0 ){
 			LPTSTR pstr = NULL;
-			int offsetx = _tcstol(pstrValue, &pstr, 10);	ASSERT(pstr);    
-			int offsety = _tcstol(pstr + 1, &pstr, 10);		ASSERT(pstr);
+			int offsetx = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstrValue, &pstr, 10)) : _tcstol(pstrValue, &pstr, 10); ASSERT(pstr);
+			int offsety = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 			SetShadowOffset(offsetx,offsety);
 		}
 		else if( _tcscmp(pstrName, _T("textcolor1")) == 0 ) {

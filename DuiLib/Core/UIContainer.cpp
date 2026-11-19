@@ -677,10 +677,10 @@ namespace DuiLib
 		if( _tcscmp(pstrName, _T("inset")) == 0 ) {
 			RECT rcInset = { 0 };
 			LPTSTR pstr = NULL;
-			rcInset.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-			rcInset.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-			rcInset.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-			rcInset.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+			rcInset.left = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstrValue, &pstr, 10)) : _tcstol(pstrValue, &pstr, 10); ASSERT(pstr);
+			rcInset.top = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+			rcInset.right = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+			rcInset.bottom = m_pManager ? m_pManager->ScaleDpi(_tcstol(pstr + 1, &pstr, 10)) : _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
 			SetInset(rcInset);
 		}
 		else if( _tcscmp(pstrName, _T("mousechild")) == 0 ) SetMouseChildEnabled(_tcscmp(pstrValue, _T("true")) == 0);
@@ -698,7 +698,7 @@ namespace DuiLib
 			EnableScrollBar(GetVerticalScrollBar() != NULL, true);
 			if( GetHorizontalScrollBar() ) GetHorizontalScrollBar()->SetAttributeList(pstrValue);
 		}
-		else if( _tcscmp(pstrName, _T("childpadding")) == 0 ) SetChildPadding(_ttoi(pstrValue));
+		else if( _tcscmp(pstrName, _T("childpadding")) == 0 ) SetChildPadding(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("childalign")) == 0 ) {
 			if( _tcscmp(pstrValue, _T("left")) == 0 ) m_iChildAlign = DT_LEFT;
 			else if( _tcscmp(pstrValue, _T("center")) == 0 ) m_iChildAlign = DT_CENTER;

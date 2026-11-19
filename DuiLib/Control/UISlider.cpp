@@ -49,17 +49,28 @@ namespace DuiLib
 		m_szThumb = szXY;
 	}
 
+	SIZE CSliderUI::GetScaledThumbSize() const
+	{
+		SIZE szThumb = m_szThumb;
+		if( m_pManager != NULL ) {
+			szThumb.cx = m_pManager->ScaleDpi(szThumb.cx);
+			szThumb.cy = m_pManager->ScaleDpi(szThumb.cy);
+		}
+		return szThumb;
+	}
+
 	RECT CSliderUI::GetThumbRect() const
 	{
+		SIZE szThumb = GetScaledThumbSize();
 		if( m_bHorizontal ) {
-			int left = m_rcItem.left + (m_rcItem.right - m_rcItem.left - m_szThumb.cx) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
-			int top = (m_rcItem.bottom + m_rcItem.top - m_szThumb.cy) / 2;
-			return CDuiRect(left, top, left + m_szThumb.cx, top + m_szThumb.cy); 
+			int left = m_rcItem.left + (m_rcItem.right - m_rcItem.left - szThumb.cx) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
+			int top = (m_rcItem.bottom + m_rcItem.top - szThumb.cy) / 2;
+			return CDuiRect(left, top, left + szThumb.cx, top + szThumb.cy);
 		}
 		else {
-			int left = (m_rcItem.right + m_rcItem.left - m_szThumb.cx) / 2;
-			int top = m_rcItem.bottom - m_szThumb.cy - (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
-			return CDuiRect(left, top, left + m_szThumb.cx, top + m_szThumb.cy); 
+			int left = (m_rcItem.right + m_rcItem.left - szThumb.cx) / 2;
+			int top = m_rcItem.bottom - szThumb.cy - (m_rcItem.bottom - m_rcItem.top - szThumb.cy) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
+			return CDuiRect(left, top, left + szThumb.cx, top + szThumb.cy);
 		}
 	}
 
@@ -114,6 +125,7 @@ namespace DuiLib
 
 	void CSliderUI::DoEvent(TEventUI& event)
 	{
+		SIZE szThumb = GetScaledThumbSize();
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
 			if( m_pParent != NULL ) m_pParent->DoEvent(event);
 			else CProgressUI::DoEvent(event);
@@ -134,14 +146,14 @@ namespace DuiLib
 				int nValue;
 
 				if (m_bHorizontal) {
-					if (event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2) nValue = m_nMax;
-					else if (event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2) nValue = m_nMin;
-					else nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+					if (event.ptMouse.x >= m_rcItem.right - szThumb.cx / 2) nValue = m_nMax;
+					else if (event.ptMouse.x <= m_rcItem.left + szThumb.cx / 2) nValue = m_nMin;
+					else nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - szThumb.cx / 2) / (m_rcItem.right - m_rcItem.left - szThumb.cx);
 				}
 				else {
-					if (event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2) nValue = m_nMin;
-					else if (event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2) nValue = m_nMax;
-					else nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+					if (event.ptMouse.y >= m_rcItem.bottom - szThumb.cy / 2) nValue = m_nMin;
+					else if (event.ptMouse.y <= m_rcItem.top + szThumb.cy / 2) nValue = m_nMax;
+					else nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - szThumb.cy / 2) / (m_rcItem.bottom - m_rcItem.top - szThumb.cy);
 				}
 				if (m_nValue != nValue && nValue >= m_nMin && nValue <= m_nMax)
 				{
@@ -160,14 +172,14 @@ namespace DuiLib
                     return;
                 }
 				if( m_bHorizontal ) {
-					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) m_nValue = m_nMax;
-					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) m_nValue = m_nMin;
-					else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+					if( event.ptMouse.x >= m_rcItem.right - szThumb.cx / 2 ) m_nValue = m_nMax;
+					else if( event.ptMouse.x <= m_rcItem.left + szThumb.cx / 2 ) m_nValue = m_nMin;
+					else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - szThumb.cx);
 				}
 				else {
-					if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) m_nValue = m_nMin;
-					else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) m_nValue = m_nMax;
-					else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+					if( event.ptMouse.y >= m_rcItem.bottom - szThumb.cy / 2 ) m_nValue = m_nMin;
+					else if( event.ptMouse.y <= m_rcItem.top + szThumb.cy / 2  ) m_nValue = m_nMax;
+					else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - szThumb.cy);
 				}
 				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
 				m_uButtonState &= ~UISTATE_CAPTURED;
@@ -196,14 +208,14 @@ namespace DuiLib
 		{
 			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
 				if( m_bHorizontal ) {
-					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) m_nValue = m_nMax;
-					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) m_nValue = m_nMin;
-					else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+					if( event.ptMouse.x >= m_rcItem.right - szThumb.cx / 2 ) m_nValue = m_nMax;
+					else if( event.ptMouse.x <= m_rcItem.left + szThumb.cx / 2 ) m_nValue = m_nMin;
+					else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - szThumb.cx);
 				}
 				else {
-					if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) m_nValue = m_nMin;
-					else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) m_nValue = m_nMax;
-					else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+					if( event.ptMouse.y >= m_rcItem.bottom - szThumb.cy / 2 ) m_nValue = m_nMin;
+					else if( event.ptMouse.y <= m_rcItem.top + szThumb.cy / 2  ) m_nValue = m_nMax;
+					else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - szThumb.cy);
 				}
 				if( m_bImmMode ) m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
 				Invalidate();

@@ -34,6 +34,7 @@ namespace DuiLib
 		void PaintStatusImage(HDC hDC);
 
 	protected:
+		SIZE GetScaledThumbSize() const;
 		SIZE m_szThumb;
 		UINT m_uButtonState;
 		int m_nStep;

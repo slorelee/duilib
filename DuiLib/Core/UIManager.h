@@ -120,6 +120,7 @@ typedef struct DUILIB_API tagTDrawInfo
 	RECT rcDestOffset;
 	RECT rcBmpPart;
 	RECT rcScale9;
+	RECT rcScale9Dest;
 	BYTE uFade;
 	bool bHole;
 	bool bTiledX;

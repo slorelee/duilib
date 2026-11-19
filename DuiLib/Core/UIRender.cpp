@@ -682,6 +682,13 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 							  const RECT& rcBmpPart, const RECT& rcScale9, bool bAlpha, 
 							  BYTE uFade, bool bHole, bool bTiledX, bool bTiledY)
 {
+	DrawImage(hDC, hBitmap, rc, rcPaint, rcBmpPart, rcScale9, rcScale9, bAlpha, uFade, bHole, bTiledX, bTiledY);
+}
+
+void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint,
+							  const RECT& rcBmpPart, const RECT& rcScale9, const RECT& rcScale9Dest, bool bAlpha,
+							  BYTE uFade, bool bHole, bool bTiledX, bool bTiledY)
+{
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 
 	typedef BOOL (WINAPI *LPALPHABLEND)(HDC, int, int, int, int,HDC, int, int, int, int, BLENDFUNCTION);
@@ -700,10 +707,10 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 		BLENDFUNCTION bf = { AC_SRC_OVER, 0, uFade, AC_SRC_ALPHA };
 		// middle
 		if( !bHole ) {
-			rcDest.left = rc.left + rcScale9.left;
-			rcDest.top = rc.top + rcScale9.top;
-			rcDest.right = rc.right - rc.left - rcScale9.left - rcScale9.right;
-			rcDest.bottom = rc.bottom - rc.top - rcScale9.top - rcScale9.bottom;
+			rcDest.left = rc.left + rcScale9Dest.left;
+			rcDest.top = rc.top + rcScale9Dest.top;
+			rcDest.right = rc.right - rc.left - rcScale9Dest.left - rcScale9Dest.right;
+			rcDest.bottom = rc.bottom - rc.top - rcScale9Dest.top - rcScale9Dest.bottom;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -780,11 +787,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 		}
 
 		// left-top
-		if( rcScale9.left > 0 && rcScale9.top > 0 ) {
+		if( rcScale9Dest.left > 0 && rcScale9Dest.top > 0 && rcScale9.left > 0 && rcScale9.top > 0 ) {
 			rcDest.left = rc.left;
 			rcDest.top = rc.top;
-			rcDest.right = rcScale9.left;
-			rcDest.bottom = rcScale9.top;
+			rcDest.right = rcScale9Dest.left;
+			rcDest.bottom = rcScale9Dest.top;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -795,11 +802,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 			}
 		}
 		// top
-		if( rcScale9.top > 0 ) {
-			rcDest.left = rc.left + rcScale9.left;
+		if( rcScale9Dest.top > 0 && rcScale9.top > 0 ) {
+			rcDest.left = rc.left + rcScale9Dest.left;
 			rcDest.top = rc.top;
-			rcDest.right = rc.right - rc.left - rcScale9.left - rcScale9.right;
-			rcDest.bottom = rcScale9.top;
+			rcDest.right = rc.right - rc.left - rcScale9Dest.left - rcScale9Dest.right;
+			rcDest.bottom = rcScale9Dest.top;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -811,11 +818,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 			}
 		}
 		// right-top
-		if( rcScale9.right > 0 && rcScale9.top > 0 ) {
-			rcDest.left = rc.right - rcScale9.right;
+		if( rcScale9Dest.right > 0 && rcScale9Dest.top > 0 && rcScale9.right > 0 && rcScale9.top > 0 ) {
+			rcDest.left = rc.right - rcScale9Dest.right;
 			rcDest.top = rc.top;
-			rcDest.right = rcScale9.right;
-			rcDest.bottom = rcScale9.top;
+			rcDest.right = rcScale9Dest.right;
+			rcDest.bottom = rcScale9Dest.top;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -826,11 +833,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 			}
 		}
 		// left
-		if( rcScale9.left > 0 ) {
+		if( rcScale9Dest.left > 0 && rcScale9.left > 0 ) {
 			rcDest.left = rc.left;
-			rcDest.top = rc.top + rcScale9.top;
-			rcDest.right = rcScale9.left;
-			rcDest.bottom = rc.bottom - rc.top - rcScale9.top - rcScale9.bottom;
+			rcDest.top = rc.top + rcScale9Dest.top;
+			rcDest.right = rcScale9Dest.left;
+			rcDest.bottom = rc.bottom - rc.top - rcScale9Dest.top - rcScale9Dest.bottom;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -842,11 +849,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 			}
 		}
 		// right
-		if( rcScale9.right > 0 ) {
-			rcDest.left = rc.right - rcScale9.right;
-			rcDest.top = rc.top + rcScale9.top;
-			rcDest.right = rcScale9.right;
-			rcDest.bottom = rc.bottom - rc.top - rcScale9.top - rcScale9.bottom;
+		if( rcScale9Dest.right > 0 && rcScale9.right > 0 ) {
+			rcDest.left = rc.right - rcScale9Dest.right;
+			rcDest.top = rc.top + rcScale9Dest.top;
+			rcDest.right = rcScale9Dest.right;
+			rcDest.bottom = rc.bottom - rc.top - rcScale9Dest.top - rcScale9Dest.bottom;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -858,11 +865,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 			}
 		}
 		// left-bottom
-		if( rcScale9.left > 0 && rcScale9.bottom > 0 ) {
+		if( rcScale9Dest.left > 0 && rcScale9Dest.bottom > 0 && rcScale9.left > 0 && rcScale9.bottom > 0 ) {
 			rcDest.left = rc.left;
-			rcDest.top = rc.bottom - rcScale9.bottom;
-			rcDest.right = rcScale9.left;
-			rcDest.bottom = rcScale9.bottom;
+			rcDest.top = rc.bottom - rcScale9Dest.bottom;
+			rcDest.right = rcScale9Dest.left;
+			rcDest.bottom = rcScale9Dest.bottom;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -873,11 +880,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 			}
 		}
 		// bottom
-		if( rcScale9.bottom > 0 ) {
-			rcDest.left = rc.left + rcScale9.left;
-			rcDest.top = rc.bottom - rcScale9.bottom;
-			rcDest.right = rc.right - rc.left - rcScale9.left - rcScale9.right;
-			rcDest.bottom = rcScale9.bottom;
+		if( rcScale9Dest.bottom > 0 && rcScale9.bottom > 0 ) {
+			rcDest.left = rc.left + rcScale9Dest.left;
+			rcDest.top = rc.bottom - rcScale9Dest.bottom;
+			rcDest.right = rc.right - rc.left - rcScale9Dest.left - rcScale9Dest.right;
+			rcDest.bottom = rcScale9Dest.bottom;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -889,11 +896,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 			}
 		}
 		// right-bottom
-		if( rcScale9.right > 0 && rcScale9.bottom > 0 ) {
-			rcDest.left = rc.right - rcScale9.right;
-			rcDest.top = rc.bottom - rcScale9.bottom;
-			rcDest.right = rcScale9.right;
-			rcDest.bottom = rcScale9.bottom;
+		if( rcScale9Dest.right > 0 && rcScale9Dest.bottom > 0 && rcScale9.right > 0 && rcScale9.bottom > 0 ) {
+			rcDest.left = rc.right - rcScale9Dest.right;
+			rcDest.top = rc.bottom - rcScale9Dest.bottom;
+			rcDest.right = rcScale9Dest.right;
+			rcDest.bottom = rcScale9Dest.bottom;
 			rcDest.right += rcDest.left;
 			rcDest.bottom += rcDest.top;
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -909,7 +916,8 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 	{
 		if (rc.right - rc.left == rcBmpPart.right - rcBmpPart.left \
 			&& rc.bottom - rc.top == rcBmpPart.bottom - rcBmpPart.top \
-			&& rcScale9.left == 0 && rcScale9.right == 0 && rcScale9.top == 0 && rcScale9.bottom == 0)
+			&& rcScale9.left == 0 && rcScale9.right == 0 && rcScale9.top == 0 && rcScale9.bottom == 0
+			&& rcScale9Dest.left == 0 && rcScale9Dest.right == 0 && rcScale9Dest.top == 0 && rcScale9Dest.bottom == 0)
 		{
 			if( ::IntersectRect(&rcTemp, &rcPaint, &rc) ) {
 				::BitBlt(hDC, rcTemp.left, rcTemp.top, rcTemp.right - rcTemp.left, rcTemp.bottom - rcTemp.top, \
@@ -920,10 +928,10 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 		{
 			// middle
 			if( !bHole ) {
-				rcDest.left = rc.left + rcScale9.left;
-				rcDest.top = rc.top + rcScale9.top;
-				rcDest.right = rc.right - rc.left - rcScale9.left - rcScale9.right;
-				rcDest.bottom = rc.bottom - rc.top - rcScale9.top - rcScale9.bottom;
+				rcDest.left = rc.left + rcScale9Dest.left;
+				rcDest.top = rc.top + rcScale9Dest.top;
+				rcDest.right = rc.right - rc.left - rcScale9Dest.left - rcScale9Dest.right;
+				rcDest.bottom = rc.bottom - rc.top - rcScale9Dest.top - rcScale9Dest.bottom;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1000,11 +1008,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 			}
 
 			// left-top
-			if( rcScale9.left > 0 && rcScale9.top > 0 ) {
+			if( rcScale9Dest.left > 0 && rcScale9Dest.top > 0 && rcScale9.left > 0 && rcScale9.top > 0 ) {
 				rcDest.left = rc.left;
 				rcDest.top = rc.top;
-				rcDest.right = rcScale9.left;
-				rcDest.bottom = rcScale9.top;
+				rcDest.right = rcScale9Dest.left;
+				rcDest.bottom = rcScale9Dest.top;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1015,11 +1023,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 				}
 			}
 			// top
-			if( rcScale9.top > 0 ) {
-				rcDest.left = rc.left + rcScale9.left;
+			if( rcScale9Dest.top > 0 && rcScale9.top > 0 ) {
+				rcDest.left = rc.left + rcScale9Dest.left;
 				rcDest.top = rc.top;
-				rcDest.right = rc.right - rc.left - rcScale9.left - rcScale9.right;
-				rcDest.bottom = rcScale9.top;
+				rcDest.right = rc.right - rc.left - rcScale9Dest.left - rcScale9Dest.right;
+				rcDest.bottom = rcScale9Dest.top;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1031,11 +1039,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 				}
 			}
 			// right-top
-			if( rcScale9.right > 0 && rcScale9.top > 0 ) {
-				rcDest.left = rc.right - rcScale9.right;
+			if( rcScale9Dest.right > 0 && rcScale9Dest.top > 0 && rcScale9.right > 0 && rcScale9.top > 0 ) {
+				rcDest.left = rc.right - rcScale9Dest.right;
 				rcDest.top = rc.top;
-				rcDest.right = rcScale9.right;
-				rcDest.bottom = rcScale9.top;
+				rcDest.right = rcScale9Dest.right;
+				rcDest.bottom = rcScale9Dest.top;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1046,11 +1054,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 				}
 			}
 			// left
-			if( rcScale9.left > 0 ) {
+			if( rcScale9Dest.left > 0 && rcScale9.left > 0 ) {
 				rcDest.left = rc.left;
-				rcDest.top = rc.top + rcScale9.top;
-				rcDest.right = rcScale9.left;
-				rcDest.bottom = rc.bottom - rc.top - rcScale9.top - rcScale9.bottom;
+				rcDest.top = rc.top + rcScale9Dest.top;
+				rcDest.right = rcScale9Dest.left;
+				rcDest.bottom = rc.bottom - rc.top - rcScale9Dest.top - rcScale9Dest.bottom;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1062,11 +1070,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 				}
 			}
 			// right
-			if( rcScale9.right > 0 ) {
-				rcDest.left = rc.right - rcScale9.right;
-				rcDest.top = rc.top + rcScale9.top;
-				rcDest.right = rcScale9.right;
-				rcDest.bottom = rc.bottom - rc.top - rcScale9.top - rcScale9.bottom;
+			if( rcScale9Dest.right > 0 && rcScale9.right > 0 ) {
+				rcDest.left = rc.right - rcScale9Dest.right;
+				rcDest.top = rc.top + rcScale9Dest.top;
+				rcDest.right = rcScale9Dest.right;
+				rcDest.bottom = rc.bottom - rc.top - rcScale9Dest.top - rcScale9Dest.bottom;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1078,11 +1086,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 				}
 			}
 			// left-bottom
-			if( rcScale9.left > 0 && rcScale9.bottom > 0 ) {
+			if( rcScale9Dest.left > 0 && rcScale9Dest.bottom > 0 && rcScale9.left > 0 && rcScale9.bottom > 0 ) {
 				rcDest.left = rc.left;
-				rcDest.top = rc.bottom - rcScale9.bottom;
-				rcDest.right = rcScale9.left;
-				rcDest.bottom = rcScale9.bottom;
+				rcDest.top = rc.bottom - rcScale9Dest.bottom;
+				rcDest.right = rcScale9Dest.left;
+				rcDest.bottom = rcScale9Dest.bottom;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1093,11 +1101,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 				}
 			}
 			// bottom
-			if( rcScale9.bottom > 0 ) {
-				rcDest.left = rc.left + rcScale9.left;
-				rcDest.top = rc.bottom - rcScale9.bottom;
-				rcDest.right = rc.right - rc.left - rcScale9.left - rcScale9.right;
-				rcDest.bottom = rcScale9.bottom;
+			if( rcScale9Dest.bottom > 0 && rcScale9.bottom > 0 ) {
+				rcDest.left = rc.left + rcScale9Dest.left;
+				rcDest.top = rc.bottom - rcScale9Dest.bottom;
+				rcDest.right = rc.right - rc.left - rcScale9Dest.left - rcScale9Dest.right;
+				rcDest.bottom = rcScale9Dest.bottom;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1109,11 +1117,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 				}
 			}
 			// right-bottom
-			if( rcScale9.right > 0 && rcScale9.bottom > 0 ) {
-				rcDest.left = rc.right - rcScale9.right;
-				rcDest.top = rc.bottom - rcScale9.bottom;
-				rcDest.right = rcScale9.right;
-				rcDest.bottom = rcScale9.bottom;
+			if( rcScale9Dest.right > 0 && rcScale9Dest.bottom > 0 && rcScale9.right > 0 && rcScale9.bottom > 0 ) {
+				rcDest.left = rc.right - rcScale9Dest.right;
+				rcDest.top = rc.bottom - rcScale9Dest.bottom;
+				rcDest.right = rcScale9Dest.right;
+				rcDest.bottom = rcScale9Dest.bottom;
 				rcDest.right += rcDest.left;
 				rcDest.bottom += rcDest.top;
 				if( ::IntersectRect(&rcTemp, &rcPaint, &rcDest) ) {
@@ -1172,7 +1180,7 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 					  TDrawInfo& drawInfo)
 {
 	// 1¡¢aaa.jpg
-	// 2¡¢file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' scale9='0,0,0,0' 
+	// 2¡¢file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' scale9='0,0,0,0'
 	// mask='#FF0000' fade='255' hole='false' xtiled='false' ytiled='false' hsl='false'
 	if( pManager == NULL ) return true;
 	if( drawInfo.pImageInfo == NULL ) {
@@ -1252,6 +1260,10 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 					drawInfo.rcScale9.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
 					drawInfo.rcScale9.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
 					drawInfo.rcScale9.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+					drawInfo.rcScale9Dest.left = pManager->ScaleDpi(drawInfo.rcScale9.left);
+					drawInfo.rcScale9Dest.top = pManager->ScaleDpi(drawInfo.rcScale9.top);
+					drawInfo.rcScale9Dest.right = pManager->ScaleDpi(drawInfo.rcScale9.right);
+					drawInfo.rcScale9Dest.bottom = pManager->ScaleDpi(drawInfo.rcScale9.bottom);
 				}
 				else if( sItem == _T("mask") ) {
 					if( sValue[0] == _T('#')) dwMask = _tcstoul(sValue.GetData() + 1, &pstr, 16);
@@ -1321,7 +1333,7 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 		TImageInfo *pImgInfo = (TImageInfo *)drawInfo.pImageInfo;
 		pImgInfo->hBlurBitmap = hDrawBmp;
 	}
-	DrawImage(hDC, hDrawBmp, rcDest, rcPaint, drawInfo.rcBmpPart, drawInfo.rcScale9,
+	DrawImage(hDC, hDrawBmp, rcDest, rcPaint, drawInfo.rcBmpPart, drawInfo.rcScale9, drawInfo.rcScale9Dest,
 		drawInfo.pImageInfo->bAlpha, drawInfo.uFade, drawInfo.bHole, drawInfo.bTiledX, drawInfo.bTiledY);
 	return true;
 }
@@ -1491,8 +1503,8 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 
 void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, RECT* prcLinks, CDuiString* sLinks, int& nLinkRects, LPCTSTR pstrDefFontId, UINT uStyle)
 {
-    // ¿¼ÂÇµ½ÔÚxml±à¼­Æ÷ÖÐÊ¹ÓÃ<>·ûºÅ²»·½±ã£¬¿ÉÒÔÊ¹ÓÃ{}·ûºÅ´úÌæ
-    // Ö§³Ö±êÇ©Ç¶Ì×£¨Èç<l><b>text</b></l>£©£¬µ«ÊÇ½»²æÇ¶Ì×ÊÇÓ¦¸Ã±ÜÃâµÄ£¨Èç<l><b>text</l></b>£©
+    // ¿¼ÂÇµ½ÔÚxml±à¼­Æ÷ÖÐÊ¹ÓÃ<>·ûºÅ²»·½±ã£¬¿ÉÒÔÊ¹ÓÃ{}·ûºÅ´úÌE
+    // Ö§³Ö±E©Ç¶Ì×£¨ÈEl><b>text</b></l>£©£¬µ«ÊÇ½»²æÇ¶Ì×ÊÇÓ¦¸Ã±ÜÃâµÄ£¨ÈEl><b>text</l></b>£©
     // The string formatter supports a kind of "mini-html" that consists of various short tags:
     //
     //   Bold:             <b>text</b>
@@ -1589,7 +1601,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
     bool bInSelected = false;
     int iLineLinkIndex = 0;
 
-    // ÅÅ°æÏ°¹ßÊÇÍ¼ÎÄµ×²¿¶ÔÆë£¬ËùÒÔÃ¿ÐÐ»æÖÆ¶¼Òª·ÖÁ½²½£¬ÏÈ¼ÆËã¸ß¶È£¬ÔÙ»æÖÆ
+    // ÅÅ°æÏ°¹ßÊÇÍ¼ÎÄµ×²¿¶ÔÆE¬ËùÒÔÃ¿ÐÐ»æÖÆ¶¼Òª·ÖÁ½²½£¬ÏÈ¼ÆËã¸ß¶È£¬ÔÙ»æÖÆ
     CDuiPtrArray aLineFontArray;
     CDuiPtrArray aLineColorArray;
     CDuiPtrArray aLinePIndentArray;
@@ -1737,7 +1749,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     while( *pstrText > _T('\0') && *pstrText <= _T(' ') ) pstrText = ::CharNext(pstrText);
                     LPCTSTR pstrTemp = pstrText;
                     int iFont = (int) _tcstol(pstrText, const_cast<LPTSTR*>(&pstrTemp), 10);
-                    //if( isdigit(*pstrText) ) { // debug°æ±¾»áÒýÆðÒì³£
+                    //if( isdigit(*pstrText) ) { // debug°æ±¾»áÒýÆðÒE£
                     if (pstrTemp != pstrText && pstrTemp[0] == _T('>')) {
                         TCHAR idBuffer[16];
                         ::ZeroMemory(idBuffer, sizeof(idBuffer));
@@ -2088,7 +2100,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( pTm->tmItalic && pFontInfo->bItalic == false ) {
                         ABC abc;
                         ::GetCharABCWidths(hDC, _T(' '), _T(' '), &abc);
-                        pt.x += abc.abcC / 2; // ¼òµ¥ÐÞÕýÒ»ÏÂÐ±Ìå»ìÅÅµÄÎÊÌâ, ÕýÈ·×ö·¨Ó¦¸ÃÊÇhttp://support.microsoft.com/kb/244798/en-us
+                        pt.x += abc.abcC / 2; // ¼òµ¥ÐÞÕýÒ»ÏÂÐ±Ìå»EÅµÄÎÊÌE ÕýÈ·×ö·¨Ó¦¸ÃÊÇhttp://support.microsoft.com/kb/244798/en-us
 					}
                     pTm = &pFontInfo->tm;
                     ::SelectObject(hDC, pFontInfo->hFont);

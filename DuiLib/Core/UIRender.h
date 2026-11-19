@@ -36,6 +36,9 @@ public:
     static void DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint, \
         const RECT& rcBmpPart, const RECT& rcScale9, bool alphaChannel, BYTE uFade = 255, 
         bool hole = false, bool xtiled = false, bool ytiled = false);
+    static void DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint, \
+        const RECT& rcBmpPart, const RECT& rcScale9, const RECT& rcScale9Dest, bool alphaChannel, \
+        BYTE uFade = 255, bool hole = false, bool xtiled = false, bool ytiled = false);
 	static bool DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rcItem, const RECT& rcPaint, 
 		TDrawInfo& drawInfo);
     static void DrawColor(HDC hDC, const RECT& rc, DWORD color);

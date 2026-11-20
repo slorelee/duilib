@@ -482,6 +482,14 @@ void CScrollBarUI::SetBkDisabledImage(LPCTSTR pStrImage)
 	Invalidate();
 }
 
+void CScrollBarUI::Move(SIZE szOffset, bool bNeedInvalidate)
+{
+	CControlUI::Move(szOffset, bNeedInvalidate);
+	::OffsetRect(&m_rcButton1, szOffset.cx, szOffset.cy);
+	::OffsetRect(&m_rcButton2, szOffset.cx, szOffset.cy);
+	if( !::IsRectEmpty(&m_rcThumb) ) ::OffsetRect(&m_rcThumb, szOffset.cx, szOffset.cy);
+}
+
 void CScrollBarUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
 	CControlUI::SetPos(rc, bNeedInvalidate);

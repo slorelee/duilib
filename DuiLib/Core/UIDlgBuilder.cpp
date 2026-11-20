@@ -249,6 +249,13 @@ static void ProcessAttributes(CPaintManagerUI* pManager, LPCTSTR pstrClass, CMar
     if( pManager ) {
         pControlNode->SetManager(pManager, NULL, false);
         CDuiStringPtrMap* pDefautAttrList = pManager->GetDefaultAttributeList(pstrClass);
+        if( _tcsicmp(pstrClass, DUI_CTR_COMBO) == 0 ) {
+            CDuiStringPtrMap* pComboBoxDefault = pManager->GetDefaultAttributeList(DUI_CTR_COMBOBOX);
+            if( pComboBoxDefault ) pDefautAttrList = pComboBoxDefault;
+        }
+        else if( _tcsicmp(pstrClass, DUI_CTR_COMBOBOX) == 0 && !pDefautAttrList ) {
+            pDefautAttrList = pManager->GetDefaultAttributeList(DUI_CTR_COMBO);
+        }
         pControlNode->SetAttributeList(pDefautAttrList);
     }
 

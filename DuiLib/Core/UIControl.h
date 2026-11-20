@@ -94,7 +94,22 @@ public:
     virtual int GetMinHeight() const;
     virtual void SetMinHeight(int cy);
     virtual int GetMaxHeight() const;
-    virtual void SetMaxHeight(int cy);
+    virtual void SetMaxHeight(int cy);    virtual int GetLogicWidth() const;
+    virtual void SetLogicWidth(int cx);
+    virtual int GetLogicHeight() const;
+    virtual void SetLogicHeight(int cy);
+    virtual int GetScaledWidth() const;
+    virtual void SetScaledWidth(int cx);
+    virtual int GetScaledHeight() const;
+    virtual void SetScaledHeight(int cy);
+    virtual int GetScaledMinWidth() const;
+    virtual void SetScaledMinWidth(int cx);
+    virtual int GetScaledMaxWidth() const;
+    virtual void SetScaledMaxWidth(int cx);
+    virtual int GetScaledMinHeight() const;
+    virtual void SetScaledMinHeight(int cy);
+    virtual int GetScaledMaxHeight() const;
+    virtual void SetScaledMaxHeight(int cy);
 
     //  Û±ÍÃ· æ
     virtual CDuiString GetToolTip() const;
@@ -198,8 +213,17 @@ protected:
     RECT m_rcPadding;
     SIZE m_cXY;
     SIZE m_cxyFixed;
+    SIZE m_cxyFixedLogical;
+    bool m_bFixedWidthPendingScale;
+    bool m_bFixedHeightPendingScale;
     SIZE m_cxyMin;
     SIZE m_cxyMax;
+    SIZE m_cxyMinLogical;
+    SIZE m_cxyMaxLogical;
+    bool m_bMinWidthPendingScale;
+    bool m_bMaxWidthPendingScale;
+    bool m_bMinHeightPendingScale;
+    bool m_bMaxHeightPendingScale;
     bool m_bVisible;
     bool m_bInternVisible;
     bool m_bEnabled;

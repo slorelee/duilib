@@ -91,8 +91,8 @@ namespace DuiLib
 		rc.top += m_rcInset.top;
 		rc.right -= m_rcInset.right;
 		rc.bottom -= m_rcInset.bottom;
-		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 
 		if( m_items.GetSize() == 0) {
 			ProcessScrollBar(rc, 0, 0);
@@ -172,8 +172,8 @@ namespace DuiLib
 			SIZE sz = m_szItem;
 			sz.cx -= rcPadding.left + rcPadding.right;
 			sz.cy -= rcPadding.top + rcPadding.bottom;
-			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
-			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+			if( sz.cx > pControl->GetScaledMaxWidth() ) sz.cx = pControl->GetScaledMaxWidth();
+			if( sz.cy > pControl->GetScaledMaxHeight() ) sz.cy = pControl->GetScaledMaxHeight();
 			if( sz.cx < 0) sz.cx = 0;
 			if( sz.cy < 0) sz.cy = 0;
 
@@ -284,16 +284,16 @@ namespace DuiLib
 	//				RECT rcPadding = pLineControl->GetPadding();
 	//				SIZE szAvailable = { rcTile.right - rcTile.left - rcPadding.left - rcPadding.right, 9999 };
 
-	//				if( szAvailable.cx < pControl->GetMinWidth() ) szAvailable.cx = pControl->GetMinWidth();
-	//				if( szAvailable.cx > pControl->GetMaxWidth() ) szAvailable.cx = pControl->GetMaxWidth();
+	//				if( szAvailable.cx < pControl->GetScaledMinWidth() ) szAvailable.cx = pControl->GetScaledMinWidth();
+	//				if( szAvailable.cx > pControl->GetScaledMaxWidth() ) szAvailable.cx = pControl->GetScaledMaxWidth();
 
 	//				SIZE szTile = pLineControl->EstimateSize(szAvailable);
 	//				if( szTile.cx == 0 ) szTile.cx = m_szItem.cx;
 	//				if( szTile.cy == 0 ) szTile.cy = m_szItem.cy;
-	//				if( szTile.cx < pControl->GetMinWidth() ) szTile.cx = pControl->GetMinWidth();
-	//				if( szTile.cx > pControl->GetMaxWidth() ) szTile.cx = pControl->GetMaxWidth();
-	//				if( szTile.cy < pControl->GetMinHeight() ) szTile.cy = pControl->GetMinHeight();
-	//				if( szTile.cy > pControl->GetMaxHeight() ) szTile.cy = pControl->GetMaxHeight();
+	//				if( szTile.cx < pControl->GetScaledMinWidth() ) szTile.cx = pControl->GetScaledMinWidth();
+	//				if( szTile.cx > pControl->GetScaledMaxWidth() ) szTile.cx = pControl->GetScaledMaxWidth();
+	//				if( szTile.cy < pControl->GetScaledMinHeight() ) szTile.cy = pControl->GetScaledMinHeight();
+	//				if( szTile.cy > pControl->GetScaledMaxHeight() ) szTile.cy = pControl->GetScaledMaxHeight();
 
 	//				cyHeight = MAX(cyHeight, szTile.cy + rcPadding.top + rcPadding.bottom);
 	//				if( (++iIndex % m_nColumns) == 0) break;
@@ -315,10 +315,10 @@ namespace DuiLib
 	//		if( szTile.cy == 0 ) szTile.cy = m_szItem.cy;
 	//		if( szTile.cx == 0 ) szTile.cx = szAvailable.cx;
 	//		if( szTile.cy == 0 ) szTile.cy = szAvailable.cy;
-	//		if( szTile.cx < pControl->GetMinWidth() ) szTile.cx = pControl->GetMinWidth();
-	//		if( szTile.cx > pControl->GetMaxWidth() ) szTile.cx = pControl->GetMaxWidth();
-	//		if( szTile.cy < pControl->GetMinHeight() ) szTile.cy = pControl->GetMinHeight();
-	//		if( szTile.cy > pControl->GetMaxHeight() ) szTile.cy = pControl->GetMaxHeight();
+	//		if( szTile.cx < pControl->GetScaledMinWidth() ) szTile.cx = pControl->GetScaledMinWidth();
+	//		if( szTile.cx > pControl->GetScaledMaxWidth() ) szTile.cx = pControl->GetScaledMaxWidth();
+	//		if( szTile.cy < pControl->GetScaledMinHeight() ) szTile.cy = pControl->GetScaledMinHeight();
+	//		if( szTile.cy > pControl->GetScaledMaxHeight() ) szTile.cy = pControl->GetScaledMaxHeight();
 	//		RECT rcPos = {(rcTile.left + rcTile.right - szTile.cx) / 2, (rcTile.top + rcTile.bottom - szTile.cy) / 2,
 	//			(rcTile.left + rcTile.right - szTile.cx) / 2 + szTile.cx, (rcTile.top + rcTile.bottom - szTile.cy) / 2 + szTile.cy};
 	//		pControl->SetPos(rcPos, false);

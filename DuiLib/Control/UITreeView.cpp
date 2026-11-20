@@ -161,9 +161,9 @@ namespace DuiLib
 				rc.right -= rcInset.right;
 				rc.bottom -= rcInset.bottom;
 				CScrollBarUI* pVerticalScrollBar = pParentContainer->GetVerticalScrollBar();
-				if( pVerticalScrollBar && pVerticalScrollBar->IsVisible() ) rc.right -= pVerticalScrollBar->GetFixedWidth();
+				if( pVerticalScrollBar && pVerticalScrollBar->IsVisible() ) rc.right -= pVerticalScrollBar->GetScaledWidth();
 				CScrollBarUI* pHorizontalScrollBar = pParentContainer->GetHorizontalScrollBar();
-				if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rc.bottom -= pHorizontalScrollBar->GetFixedHeight();
+				if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rc.bottom -= pHorizontalScrollBar->GetScaledHeight();
 
 				RECT invalidateRc = m_rcItem;
 				if( !::IntersectRect(&invalidateRc, &m_rcItem, &rc) ) 

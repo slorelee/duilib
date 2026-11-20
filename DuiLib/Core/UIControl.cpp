@@ -33,8 +33,15 @@ m_nTooltipWidth(300)
 {
     m_cXY.cx = m_cXY.cy = 0;
     m_cxyFixed.cx = m_cxyFixed.cy = 0;
+    m_cxyFixedLogical.cx = m_cxyFixedLogical.cy = 0;
+    m_bFixedWidthPendingScale = false;
+    m_bFixedHeightPendingScale = false;
     m_cxyMin.cx = m_cxyMin.cy = 0;
+    m_cxyMinLogical.cx = m_cxyMinLogical.cy = 0;
+    m_bMinWidthPendingScale = m_bMinHeightPendingScale = false;
     m_cxyMax.cx = m_cxyMax.cy = 9999;
+    m_cxyMaxLogical.cx = m_cxyMaxLogical.cy = 9999;
+    m_bMaxWidthPendingScale = m_bMaxHeightPendingScale = true;
     m_cxyBorderRound.cx = m_cxyBorderRound.cy = 0;
 
     ::ZeroMemory(&m_rcPadding, sizeof(RECT));
@@ -111,8 +118,35 @@ CPaintManagerUI* CControlUI::GetManager() const
 void CControlUI::SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit)
 {
     if( m_pCover != NULL ) m_pCover->SetManager(pManager, this, bInit);
+    bool attachManager = m_pManager == NULL && pManager != NULL;
     m_pManager = pManager;
     m_pParent = pParent;
+    if( attachManager ) {
+        if( m_bFixedWidthPendingScale ) {
+            m_cxyFixed.cx = m_pManager->ScaleDpi(m_cxyFixedLogical.cx);
+            m_bFixedWidthPendingScale = false;
+        }
+        if( m_bFixedHeightPendingScale ) {
+            m_cxyFixed.cy = m_pManager->ScaleDpi(m_cxyFixedLogical.cy);
+            m_bFixedHeightPendingScale = false;
+        }
+        if( m_bMinWidthPendingScale ) {
+            m_cxyMin.cx = m_pManager->ScaleDpi(m_cxyMinLogical.cx);
+            m_bMinWidthPendingScale = false;
+        }
+        if( m_bMaxWidthPendingScale ) {
+            m_cxyMax.cx = m_pManager->ScaleDpi(m_cxyMaxLogical.cx);
+            m_bMaxWidthPendingScale = false;
+        }
+        if( m_bMinHeightPendingScale ) {
+            m_cxyMin.cy = m_pManager->ScaleDpi(m_cxyMinLogical.cy);
+            m_bMinHeightPendingScale = false;
+        }
+        if( m_bMaxHeightPendingScale ) {
+            m_cxyMax.cy = m_pManager->ScaleDpi(m_cxyMaxLogical.cy);
+            m_bMaxHeightPendingScale = false;
+        }
+    }
     if( bInit && m_pParent ) Init();
 }
 
@@ -202,8 +236,8 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 	m_diBk.sDrawString = pStrImage;
 	DrawImage(NULL, m_diBk);
 	if( m_bFloat && m_cxyFixed.cx == 0 && m_cxyFixed.cy == 0 && m_diBk.pImageInfo ) {
-		m_cxyFixed.cx = m_diBk.pImageInfo->nX;
-		m_cxyFixed.cy = m_diBk.pImageInfo->nY;
+        SetScaledWidth(m_diBk.pImageInfo->nX);
+        SetScaledHeight(m_diBk.pImageInfo->nY);
 	}
 	Invalidate();
 }
@@ -339,8 +373,13 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
 				(LONG)(width*m_piFloatPercent.right), (LONG)(height*m_piFloatPercent.bottom)};
 			m_cXY.cx = rc.left - rcPercent.left;
 			m_cXY.cy = rc.top - rcPercent.top;
-			m_cxyFixed.cx = rc.right - rcPercent.right - m_cXY.cx;
-			m_cxyFixed.cy = rc.bottom - rcPercent.bottom - m_cXY.cy;
+            int scale = m_pManager ? static_cast<int>(m_pManager->GetDpiScale() * 1000.0f + 0.5f) : 1000;
+            m_cxyFixed.cx = rc.right - rcPercent.right - m_cXY.cx;
+            m_cxyFixed.cy = rc.bottom - rcPercent.bottom - m_cXY.cy;
+            m_cxyFixedLogical.cx = scale > 0 ? MulDiv(m_cxyFixed.cx, 1000, scale) : m_cxyFixed.cx;
+            m_cxyFixedLogical.cy = scale > 0 ? MulDiv(m_cxyFixed.cy, 1000, scale) : m_cxyFixed.cy;
+            m_bFixedWidthPendingScale = false;
+            m_bFixedHeightPendingScale = false;
 		}
 	}
 	else {
@@ -373,7 +412,7 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
     if( m_pCover != NULL && m_pCover->IsVisible() ) {
         if( m_pCover->IsFloat() ) {
             SIZE szXY = m_pCover->GetFixedXY();
-            SIZE sz = {m_pCover->GetFixedWidth(), m_pCover->GetFixedHeight()};
+            SIZE sz = {m_pCover->GetScaledWidth(), m_pCover->GetScaledHeight()};
             TPercentInfo rcPercent = m_pCover->GetFloatPercent();
             LONG width = m_rcItem.right - m_rcItem.left;
             LONG height = m_rcItem.bottom - m_rcItem.top;
@@ -386,10 +425,10 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
         }
         else {
             SIZE sz = { rc.right - rc.left, rc.bottom - rc.top };
-            if( sz.cx < m_pCover->GetMinWidth() ) sz.cx = m_pCover->GetMinWidth();
-            if( sz.cx > m_pCover->GetMaxWidth() ) sz.cx = m_pCover->GetMaxWidth();
-            if( sz.cy < m_pCover->GetMinHeight() ) sz.cy = m_pCover->GetMinHeight();
-            if( sz.cy > m_pCover->GetMaxHeight() ) sz.cy = m_pCover->GetMaxHeight();
+            if( sz.cx < m_pCover->GetScaledMinWidth() ) sz.cx = m_pCover->GetScaledMinWidth();
+            if( sz.cx > m_pCover->GetScaledMaxWidth() ) sz.cx = m_pCover->GetScaledMaxWidth();
+            if( sz.cy < m_pCover->GetScaledMinHeight() ) sz.cy = m_pCover->GetScaledMinHeight();
+            if( sz.cy > m_pCover->GetScaledMaxHeight() ) sz.cy = m_pCover->GetScaledMaxHeight();
             RECT rcCtrl = { rc.left, rc.top, rc.left + sz.cx, rc.top + sz.cy };
             m_pCover->SetPos(rcCtrl, false);
         }
@@ -477,86 +516,188 @@ void CControlUI::SetFloatPercent(TPercentInfo piFloatPercent)
 
 int CControlUI::GetFixedWidth() const
 {
-    return m_cxyFixed.cx;
+    return m_cxyFixedLogical.cx;
 }
 
 void CControlUI::SetFixedWidth(int cx)
 {
     if( cx < 0 ) return; 
+    m_cxyFixedLogical.cx = cx;
+    m_bFixedWidthPendingScale = m_pManager == NULL;
+    m_cxyFixed.cx = m_pManager ? m_pManager->ScaleDpi(cx) : cx;
+    NeedParentUpdate();
+}
+
+int CControlUI::GetLogicWidth() const
+{
+    return GetFixedWidth();
+}
+
+void CControlUI::SetLogicWidth(int cx)
+{
+    SetFixedWidth(cx);
+}
+
+int CControlUI::GetLogicHeight() const
+{
+    return GetFixedHeight();
+}
+
+void CControlUI::SetLogicHeight(int cy)
+{
+    SetFixedHeight(cy);
+}
+
+int CControlUI::GetScaledWidth() const
+{
+    return m_cxyFixed.cx;
+}
+
+void CControlUI::SetScaledWidth(int cx)
+{
+    if( cx < 0 ) return;
     m_cxyFixed.cx = cx;
+    int scale = m_pManager ? static_cast<int>(m_pManager->GetDpiScale() * 1000.0f + 0.5f) : 1000;
+    m_cxyFixedLogical.cx = scale > 0 ? MulDiv(cx, 1000, scale) : cx;
+    m_bFixedWidthPendingScale = false;
     NeedParentUpdate();
 }
 
 int CControlUI::GetFixedHeight() const
 {
-    return m_cxyFixed.cy;
+    return m_cxyFixedLogical.cy;
 }
 
 void CControlUI::SetFixedHeight(int cy)
 {
     if( cy < 0 ) return; 
+    m_cxyFixedLogical.cy = cy;
+    m_bFixedHeightPendingScale = m_pManager == NULL;
+    m_cxyFixed.cy = m_pManager ? m_pManager->ScaleDpi(cy) : cy;
+    NeedParentUpdate();
+}
+
+int CControlUI::GetScaledHeight() const
+{
+    return m_cxyFixed.cy;
+}
+
+void CControlUI::SetScaledHeight(int cy)
+{
+    if( cy < 0 ) return;
     m_cxyFixed.cy = cy;
+    int scale = m_pManager ? static_cast<int>(m_pManager->GetDpiScale() * 1000.0f + 0.5f) : 1000;
+    m_cxyFixedLogical.cy = scale > 0 ? MulDiv(cy, 1000, scale) : cy;
+    m_bFixedHeightPendingScale = false;
     NeedParentUpdate();
 }
 
 int CControlUI::GetMinWidth() const
 {
-    return m_cxyMin.cx;
+    return m_cxyMinLogical.cx;
 }
 
 void CControlUI::SetMinWidth(int cx)
 {
-    if( m_cxyMin.cx == cx ) return;
-
-    if( cx < 0 ) return; 
-    m_cxyMin.cx = cx;
+    if( cx < 0 || m_cxyMinLogical.cx == cx ) return;
+    m_cxyMinLogical.cx = cx;
+    m_bMinWidthPendingScale = m_pManager == NULL;
+    m_cxyMin.cx = m_pManager ? m_pManager->ScaleDpi(cx) : cx;
     NeedParentUpdate();
 }
 
 int CControlUI::GetMaxWidth() const
 {
-	if (m_cxyMax.cx < m_cxyMin.cx) return m_cxyMin.cx;
-    return m_cxyMax.cx;
+    if( m_cxyMaxLogical.cx < m_cxyMinLogical.cx ) return m_cxyMinLogical.cx;
+    return m_cxyMaxLogical.cx;
 }
 
 void CControlUI::SetMaxWidth(int cx)
 {
-    if( m_cxyMax.cx == cx ) return;
-
-    if( cx < 0 ) return; 
-    m_cxyMax.cx = cx;
+    if( cx < 0 || m_cxyMaxLogical.cx == cx ) return;
+    m_cxyMaxLogical.cx = cx;
+    m_bMaxWidthPendingScale = m_pManager == NULL;
+    m_cxyMax.cx = m_pManager ? m_pManager->ScaleDpi(cx) : cx;
     NeedParentUpdate();
 }
 
 int CControlUI::GetMinHeight() const
 {
-    return m_cxyMin.cy;
+    return m_cxyMinLogical.cy;
 }
 
 void CControlUI::SetMinHeight(int cy)
 {
-    if( m_cxyMin.cy == cy ) return;
-
-    if( cy < 0 ) return; 
-    m_cxyMin.cy = cy;
+    if( cy < 0 || m_cxyMinLogical.cy == cy ) return;
+    m_cxyMinLogical.cy = cy;
+    m_bMinHeightPendingScale = m_pManager == NULL;
+    m_cxyMin.cy = m_pManager ? m_pManager->ScaleDpi(cy) : cy;
     NeedParentUpdate();
 }
 
 int CControlUI::GetMaxHeight() const
 {
-	if (m_cxyMax.cy < m_cxyMin.cy) return m_cxyMin.cy;
-    return m_cxyMax.cy;
+    if( m_cxyMaxLogical.cy < m_cxyMinLogical.cy ) return m_cxyMinLogical.cy;
+    return m_cxyMaxLogical.cy;
 }
 
 void CControlUI::SetMaxHeight(int cy)
 {
-    if( m_cxyMax.cy == cy ) return;
-
-    if( cy < 0 ) return; 
-    m_cxyMax.cy = cy;
+    if( cy < 0 || m_cxyMaxLogical.cy == cy ) return;
+    m_cxyMaxLogical.cy = cy;
+    m_bMaxHeightPendingScale = m_pManager == NULL;
+    m_cxyMax.cy = m_pManager ? m_pManager->ScaleDpi(cy) : cy;
     NeedParentUpdate();
 }
 
+int CControlUI::GetScaledMinWidth() const { return m_cxyMin.cx; }
+void CControlUI::SetScaledMinWidth(int cx)
+{
+    if( cx < 0 || m_cxyMin.cx == cx ) return;
+    m_cxyMin.cx = cx;
+    int scale = m_pManager ? static_cast<int>(m_pManager->GetDpiScale() * 1000.0f + 0.5f) : 1000;
+    m_cxyMinLogical.cx = scale > 0 ? MulDiv(cx, 1000, scale) : cx;
+    m_bMinWidthPendingScale = false;
+    NeedParentUpdate();
+}
+int CControlUI::GetScaledMaxWidth() const
+{
+    if( m_cxyMax.cx < m_cxyMin.cx ) return m_cxyMin.cx;
+    return m_cxyMax.cx;
+}
+void CControlUI::SetScaledMaxWidth(int cx)
+{
+    if( cx < 0 || m_cxyMax.cx == cx ) return;
+    m_cxyMax.cx = cx;
+    int scale = m_pManager ? static_cast<int>(m_pManager->GetDpiScale() * 1000.0f + 0.5f) : 1000;
+    m_cxyMaxLogical.cx = scale > 0 ? MulDiv(cx, 1000, scale) : cx;
+    m_bMaxWidthPendingScale = false;
+    NeedParentUpdate();
+}
+int CControlUI::GetScaledMinHeight() const { return m_cxyMin.cy; }
+void CControlUI::SetScaledMinHeight(int cy)
+{
+    if( cy < 0 || m_cxyMin.cy == cy ) return;
+    m_cxyMin.cy = cy;
+    int scale = m_pManager ? static_cast<int>(m_pManager->GetDpiScale() * 1000.0f + 0.5f) : 1000;
+    m_cxyMinLogical.cy = scale > 0 ? MulDiv(cy, 1000, scale) : cy;
+    m_bMinHeightPendingScale = false;
+    NeedParentUpdate();
+}
+int CControlUI::GetScaledMaxHeight() const
+{
+    if( m_cxyMax.cy < m_cxyMin.cy ) return m_cxyMin.cy;
+    return m_cxyMax.cy;
+}
+void CControlUI::SetScaledMaxHeight(int cy)
+{
+    if( cy < 0 || m_cxyMax.cy == cy ) return;
+    m_cxyMax.cy = cy;
+    int scale = m_pManager ? static_cast<int>(m_pManager->GetDpiScale() * 1000.0f + 0.5f) : 1000;
+    m_cxyMaxLogical.cy = scale > 0 ? MulDiv(cy, 1000, scale) : cy;
+    m_bMaxHeightPendingScale = false;
+    NeedParentUpdate();
+}
 CDuiString CControlUI::GetToolTip() const
 {
     return m_sToolTip;
@@ -933,8 +1074,8 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetFixedXY(szXY);
 		//ASSERT(rcPos.right - rcPos.left >= 0);
 		//ASSERT(rcPos.bottom - rcPos.top >= 0);
-        SetFixedWidth(rcPos.right - rcPos.left);
-        SetFixedHeight(rcPos.bottom - rcPos.top);
+        SetScaledWidth(rcPos.right - rcPos.left);
+        SetScaledHeight(rcPos.bottom - rcPos.top);
     }
     else if( _tcscmp(pstrName, _T("padding")) == 0 ) {
         RECT rcPadding = { 0 };
@@ -1005,12 +1146,12 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetBorderRound(cxyRound);
     }
     else if( _tcscmp(pstrName, _T("bkimage")) == 0 ) SetBkImage(pstrValue);
-    else if( _tcscmp(pstrName, _T("width")) == 0 ) SetFixedWidth(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("height")) == 0 ) SetFixedHeight(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("minwidth")) == 0 ) SetMinWidth(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("minheight")) == 0 ) SetMinHeight(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("maxwidth")) == 0 ) SetMaxWidth(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("maxheight")) == 0 ) SetMaxHeight(m_pManager ? m_pManager->ScaleDpi(_ttoi(pstrValue)) : _ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("width")) == 0 ) SetFixedWidth(_ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("height")) == 0 ) SetFixedHeight(_ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("minwidth")) == 0 ) SetMinWidth(_ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("minheight")) == 0 ) SetMinHeight(_ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("maxwidth")) == 0 ) SetMaxWidth(_ttoi(pstrValue));
+    else if( _tcscmp(pstrName, _T("maxheight")) == 0 ) SetMaxHeight(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("name")) == 0 ) SetName(pstrValue);
     else if( _tcscmp(pstrName, _T("text")) == 0 ) SetText(pstrValue);
     else if( _tcscmp(pstrName, _T("tooltip")) == 0 ) SetToolTip(pstrValue);

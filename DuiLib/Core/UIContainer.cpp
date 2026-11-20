@@ -446,7 +446,7 @@ namespace DuiLib
 	{
 		SIZE sz = GetScrollPos();
 		int iOffset = m_rcItem.bottom - m_rcItem.top - m_rcInset.top - m_rcInset.bottom;
-		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) iOffset -= m_pHorizontalScrollBar->GetFixedHeight();
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) iOffset -= m_pHorizontalScrollBar->GetScaledHeight();
 		sz.cy -= iOffset;
 		SetScrollPos(sz);
 	}
@@ -455,7 +455,7 @@ namespace DuiLib
 	{
 		SIZE sz = GetScrollPos();
 		int iOffset = m_rcItem.bottom - m_rcItem.top - m_rcInset.top - m_rcInset.bottom;
-		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) iOffset -= m_pHorizontalScrollBar->GetFixedHeight();
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) iOffset -= m_pHorizontalScrollBar->GetScaledHeight();
 		sz.cy += iOffset;
 		SetScrollPos(sz);
 	}
@@ -500,7 +500,7 @@ namespace DuiLib
 	{
 		SIZE sz = GetScrollPos();
 		int iOffset = m_rcItem.right - m_rcItem.left - m_rcInset.left - m_rcInset.right;
-		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) iOffset -= m_pVerticalScrollBar->GetFixedWidth();
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) iOffset -= m_pVerticalScrollBar->GetScaledWidth();
 		sz.cx -= iOffset;
 		SetScrollPos(sz);
 	}
@@ -509,7 +509,7 @@ namespace DuiLib
 	{
 		SIZE sz = GetScrollPos();
 		int iOffset = m_rcItem.right - m_rcItem.left - m_rcInset.left - m_rcInset.right;
-		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) iOffset -= m_pVerticalScrollBar->GetFixedWidth();
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) iOffset -= m_pVerticalScrollBar->GetScaledWidth();
 		sz.cx += iOffset;
 		SetScrollPos(sz);
 	}
@@ -535,7 +535,7 @@ namespace DuiLib
 			m_pVerticalScrollBar->SetScrollRange(0);
 			m_pVerticalScrollBar->SetOwner(this);
 			m_pVerticalScrollBar->SetManager(m_pManager, NULL, false);
-			if( m_pManager ) m_pVerticalScrollBar->SetFixedWidth(m_pManager->ScaleDpi(m_pVerticalScrollBar->GetFixedWidth()));
+			if( m_pManager ) m_pVerticalScrollBar->SetScaledWidth(m_pManager->ScaleDpi(m_pVerticalScrollBar->GetFixedWidth()));
 			if ( m_pManager ) {
 				CDuiStringPtrMap* pDefautAttrList = m_pManager->GetDefaultAttributeList(_T("VScrollBar"));
 				if( pDefautAttrList ) {
@@ -554,7 +554,7 @@ namespace DuiLib
 			m_pHorizontalScrollBar->SetHorizontal(true);
 			m_pHorizontalScrollBar->SetOwner(this);
 			m_pHorizontalScrollBar->SetManager(m_pManager, NULL, false);
-			if( m_pManager ) m_pHorizontalScrollBar->SetFixedHeight(m_pManager->ScaleDpi(m_pHorizontalScrollBar->GetFixedHeight()));
+			if( m_pManager ) m_pHorizontalScrollBar->SetScaledHeight(m_pManager->ScaleDpi(m_pHorizontalScrollBar->GetFixedHeight()));
 			if ( m_pManager ) {
 				CDuiStringPtrMap* pDefautAttrList = m_pManager->GetDefaultAttributeList(_T("HScrollBar"));
 				if( pDefautAttrList ) {
@@ -613,10 +613,10 @@ namespace DuiLib
 		rc.bottom -= m_rcInset.bottom;
 
 		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
-			rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+			rc.right -= m_pVerticalScrollBar->GetScaledWidth();
 		}
 		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
-			rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+			rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 		}
 		return rc;
 	}
@@ -636,13 +636,13 @@ namespace DuiLib
 			rc.top -= m_pVerticalScrollBar->GetScrollPos();
 			rc.bottom -= m_pVerticalScrollBar->GetScrollPos();
 			rc.bottom += m_pVerticalScrollBar->GetScrollRange();
-			rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+			rc.right -= m_pVerticalScrollBar->GetScaledWidth();
 		}
 		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
 			rc.left -= m_pHorizontalScrollBar->GetScrollPos();
 			rc.right -= m_pHorizontalScrollBar->GetScrollPos();
 			rc.right += m_pHorizontalScrollBar->GetScrollRange();
-			rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+			rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 		}
 
 		for( int it = 0; it < m_items.GetSize(); it++ ) {
@@ -653,10 +653,10 @@ namespace DuiLib
 			}
 			else { 
 				SIZE sz = { rc.right - rc.left, rc.bottom - rc.top };
-				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
-				if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
-				if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+				if( sz.cx < pControl->GetScaledMinWidth() ) sz.cx = pControl->GetScaledMinWidth();
+				if( sz.cx > pControl->GetScaledMaxWidth() ) sz.cx = pControl->GetScaledMaxWidth();
+				if( sz.cy < pControl->GetScaledMinHeight() ) sz.cy = pControl->GetScaledMinHeight();
+				if( sz.cy > pControl->GetScaledMaxHeight() ) sz.cy = pControl->GetScaledMaxHeight();
 				RECT rcCtrl = { rc.left, rc.top, rc.left + sz.cx, rc.top + sz.cy };
 				pControl->SetPos(rcCtrl, false);
 			}
@@ -754,8 +754,8 @@ namespace DuiLib
 			rc.top += m_rcInset.top;
 			rc.right -= m_rcInset.right;
 			rc.bottom -= m_rcInset.bottom;
-			if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-			if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+			if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+			if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 			if( (uFlags & UIFIND_TOP_FIRST) != 0 ) {
 				for( int it = m_items.GetSize() - 1; it >= 0; it-- ) {
 					pResult = static_cast<CControlUI*>(m_items[it])->FindControl(Proc, pData, uFlags);
@@ -802,8 +802,8 @@ namespace DuiLib
 			rc.top += m_rcInset.top;
 			rc.right -= m_rcInset.right;
 			rc.bottom -= m_rcInset.bottom;
-			if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-			if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+			if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+			if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 
 			if( !::IntersectRect(&rcTemp, &rcPaint, &rc) ) {
 				for( int it = 0; it < m_items.GetSize(); it++ ) {
@@ -870,7 +870,7 @@ namespace DuiLib
 		if( !pControl->IsFloat() ) return;
 
 		SIZE szXY = pControl->GetFixedXY();
-		SIZE sz = {pControl->GetFixedWidth(), pControl->GetFixedHeight()};
+		SIZE sz = {pControl->GetScaledWidth(), pControl->GetScaledHeight()};
 		TPercentInfo rcPercent = pControl->GetFloatPercent();
 		LONG width = m_rcItem.right - m_rcItem.left;
 		LONG height = m_rcItem.bottom - m_rcItem.top;
@@ -910,7 +910,7 @@ namespace DuiLib
 				}
 				else
 				{
-					RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetFixedHeight()};
+					RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetScaledHeight()};
 					m_pHorizontalScrollBar->SetPos(rcScrollBarPos, false);
 
 					if( m_pHorizontalScrollBar->GetScrollRange() != cxScroll ) {
@@ -934,9 +934,9 @@ namespace DuiLib
 					if (!m_pHorizontalScrollBar->IsVisible()) {
 						m_pHorizontalScrollBar->SetVisible(true);
 						m_pHorizontalScrollBar->SetScrollPos(0);
-						rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+						rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 					}
-					RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetFixedHeight()};
+					RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetScaledHeight()};
 					m_pHorizontalScrollBar->SetPos(rcScrollBarPos, false);
 					if (m_pHorizontalScrollBar->GetScrollRange() != cxRequired - (rc.right - rc.left)) {
 						m_pHorizontalScrollBar->SetScrollRange(cxRequired - (rc.right - rc.left));
@@ -946,7 +946,7 @@ namespace DuiLib
 				else {
 					if (m_pHorizontalScrollBar->IsVisible()) {
 						m_pHorizontalScrollBar->SetVisible(false);
-						rc.bottom += m_pHorizontalScrollBar->GetFixedHeight();
+						rc.bottom += m_pHorizontalScrollBar->GetScaledHeight();
 					}
 				}
 
@@ -954,9 +954,9 @@ namespace DuiLib
 					m_pVerticalScrollBar->SetVisible(true);
 					m_pVerticalScrollBar->SetScrollRange(cyRequired - (rc.bottom - rc.top));
 					m_pVerticalScrollBar->SetScrollPos(0);
-					rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+					rc.right -= m_pVerticalScrollBar->GetScaledWidth();
 					if (m_pHorizontalScrollBar->IsVisible()) {
-						RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetFixedHeight()};
+						RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetScaledHeight()};
 						m_pHorizontalScrollBar->SetPos(rcScrollBarPos, false);
 						m_pHorizontalScrollBar->SetScrollRange(cxRequired - (rc.right - rc.left));
 					}
@@ -981,9 +981,9 @@ namespace DuiLib
 					m_pVerticalScrollBar->SetVisible(false);
 					m_pVerticalScrollBar->SetScrollPos(0);
 					m_pVerticalScrollBar->SetScrollRange(0);
-					rc.right += m_pVerticalScrollBar->GetFixedWidth();
+					rc.right += m_pVerticalScrollBar->GetScaledWidth();
 					if (m_pHorizontalScrollBar->IsVisible()) {
-						RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetFixedHeight()};
+						RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetScaledHeight()};
 						m_pHorizontalScrollBar->SetPos(rcScrollBarPos, false);
 						m_pHorizontalScrollBar->SetScrollRange(cxRequired - (rc.right - rc.left));
 					}
@@ -992,7 +992,7 @@ namespace DuiLib
 				}
 				else
 				{
-					RECT rcScrollBarPos = { rc.right, rc.top, rc.right + m_pVerticalScrollBar->GetFixedWidth(), rc.bottom };
+					RECT rcScrollBarPos = { rc.right, rc.top, rc.right + m_pVerticalScrollBar->GetScaledWidth(), rc.bottom };
 					m_pVerticalScrollBar->SetPos(rcScrollBarPos, false);
 
 					if( m_pVerticalScrollBar->GetScrollRange() != cyScroll ) {
@@ -1037,7 +1037,7 @@ namespace DuiLib
 			}
 			else
 			{
-				RECT rcScrollBarPos = { rc.right, rc.top, rc.right + m_pVerticalScrollBar->GetFixedWidth(), rc.bottom };
+				RECT rcScrollBarPos = { rc.right, rc.top, rc.right + m_pVerticalScrollBar->GetScaledWidth(), rc.bottom };
 				m_pVerticalScrollBar->SetPos(rcScrollBarPos, false);
 
 				if( m_pVerticalScrollBar->GetScrollRange() != cyScroll ) {

@@ -167,14 +167,14 @@ namespace DuiLib
 			if( sz.cx == 0 ) {
 				sz.cx = MAX(0, szAvailable.cx);
 			}
-			if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+			if( sz.cx < pControl->GetScaledMinWidth() ) sz.cx = pControl->GetScaledMinWidth();
+			if( sz.cx > pControl->GetScaledMaxWidth() ) sz.cx = pControl->GetScaledMaxWidth();
 
 			if(sz.cy == 0) {
 				sz.cy = MAX(0, szAvailable.cy);
 			}
-			if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
-			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+			if( sz.cy < pControl->GetScaledMinHeight() ) sz.cy = pControl->GetScaledMinHeight();
+			if( sz.cy > pControl->GetScaledMaxHeight() ) sz.cy = pControl->GetScaledMaxHeight();
 
 			RECT rcCtrl = { rc.left, rc.top, rc.left + sz.cx, rc.top + sz.cy};
 			pControl->SetPos(rcCtrl, false);

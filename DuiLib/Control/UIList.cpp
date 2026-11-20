@@ -326,13 +326,13 @@ void CListUI::SetPos(RECT rc, bool bNeedInvalidate)
 		rc.top -= m_pVerticalScrollBar->GetScrollPos();
 		rc.bottom -= m_pVerticalScrollBar->GetScrollPos();
 		rc.bottom += m_pVerticalScrollBar->GetScrollRange();
-		rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+		rc.right -= m_pVerticalScrollBar->GetScaledWidth();
 	}
 	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
 		rc.left -= m_pHorizontalScrollBar->GetScrollPos();
 		rc.right -= m_pHorizontalScrollBar->GetScrollPos();
 		rc.right += m_pHorizontalScrollBar->GetScrollRange();
-		rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+		rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 	}
 
 	m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
@@ -810,7 +810,7 @@ void CListUI::EnsureVisible(int iIndex)
     rcList.bottom -= rcListInset.bottom;
 
     CScrollBarUI* pHorizontalScrollBar = m_pList->GetHorizontalScrollBar();
-    if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rcList.bottom -= pHorizontalScrollBar->GetFixedHeight();
+    if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rcList.bottom -= pHorizontalScrollBar->GetScaledHeight();
 
     int iPos = m_pList->GetScrollPos().cy;
     if( rcItem.top >= rcList.top && rcItem.bottom < rcList.bottom ) return;
@@ -1161,8 +1161,8 @@ void CListBodyUI::SetPos(RECT rc, bool bNeedInvalidate)
     rc.top += m_rcInset.top;
     rc.right -= m_rcInset.right;
     rc.bottom -= m_rcInset.bottom;
-    if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-    if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+    if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+    if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 
     // Determine the minimum size
     SIZE szAvailable = { rc.right - rc.left, rc.bottom - rc.top };
@@ -1194,20 +1194,20 @@ void CListBodyUI::SetPos(RECT rc, bool bNeedInvalidate)
         szControlAvailable = szAvailable;
         RECT rcPadding = pControl->GetPadding();
         szControlAvailable.cx -= rcPadding.left + rcPadding.right;
-        iControlMaxWidth = pControl->GetFixedWidth();
-        iControlMaxHeight = pControl->GetFixedHeight();
-        if (iControlMaxWidth <= 0) iControlMaxWidth = pControl->GetMaxWidth(); 
-        if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
+        iControlMaxWidth = pControl->GetScaledWidth();
+        iControlMaxHeight = pControl->GetScaledHeight();
+        if (iControlMaxWidth <= 0) iControlMaxWidth = pControl->GetScaledMaxWidth();
+        if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetScaledMaxHeight();
         if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
         if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
         SIZE sz = pControl->EstimateSize(szAvailable);
-        if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
-        if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+        if( sz.cy < pControl->GetScaledMinHeight() ) sz.cy = pControl->GetScaledMinHeight();
+        if( sz.cy > pControl->GetScaledMaxHeight() ) sz.cy = pControl->GetScaledMaxHeight();
         cyFixed += sz.cy + pControl->GetPadding().top + pControl->GetPadding().bottom;
 
         sz.cx = MAX(sz.cx, 0);
-        if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-        if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+        if( sz.cx < pControl->GetScaledMinWidth() ) sz.cx = pControl->GetScaledMinWidth();
+        if( sz.cx > pControl->GetScaledMaxWidth() ) sz.cx = pControl->GetScaledMaxWidth();
         cxNeeded = MAX(cxNeeded, sz.cx);
         nEstimateNum++;
     }
@@ -1246,20 +1246,20 @@ void CListBodyUI::SetPos(RECT rc, bool bNeedInvalidate)
         szRemaining.cy -= rcPadding.top;
         szControlAvailable = szRemaining;
         szControlAvailable.cx -= rcPadding.left + rcPadding.right;
-        iControlMaxWidth = pControl->GetFixedWidth();
-        iControlMaxHeight = pControl->GetFixedHeight();
-        if (iControlMaxWidth <= 0) iControlMaxWidth = pControl->GetMaxWidth(); 
-        if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
+        iControlMaxWidth = pControl->GetScaledWidth();
+        iControlMaxHeight = pControl->GetScaledHeight();
+        if (iControlMaxWidth <= 0) iControlMaxWidth = pControl->GetScaledMaxWidth();
+        if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetScaledMaxHeight();
         if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
         if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
         SIZE sz = pControl->EstimateSize(szControlAvailable);
-        if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
-        if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
-        sz.cx = pControl->GetMaxWidth();
+        if( sz.cy < pControl->GetScaledMinHeight() ) sz.cy = pControl->GetScaledMinHeight();
+        if( sz.cy > pControl->GetScaledMaxHeight() ) sz.cy = pControl->GetScaledMaxHeight();
+        sz.cx = pControl->GetScaledMaxWidth();
         if( sz.cx == 0 ) sz.cx = szAvailable.cx - rcPadding.left - rcPadding.right;
         if( sz.cx < 0 ) sz.cx = 0;
         if( sz.cx > szControlAvailable.cx ) sz.cx = szControlAvailable.cx;
-        if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
+        if( sz.cx < pControl->GetScaledMinWidth() ) sz.cx = pControl->GetScaledMinWidth();
 
         RECT rcCtrl = { iPosX + rcPadding.left, iPosY + rcPadding.top, iPosX + rcPadding.left + sz.cx, iPosY + sz.cy + rcPadding.top + rcPadding.bottom };
         pControl->SetPos(rcCtrl, false);
@@ -1323,8 +1323,8 @@ bool CListBodyUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
         rc.top += m_rcInset.top;
         rc.right -= m_rcInset.right;
         rc.bottom -= m_rcInset.bottom;
-        if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-        if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+        if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+        if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 
         if( !::IntersectRect(&rcTemp, &rcPaint, &rc) ) {
             for( int it = 0; it < m_items.GetSize(); it++ ) {
@@ -1753,8 +1753,8 @@ void CListHeaderItemUI::DoEvent(TEventUI& event)
                 rc.left -= ptLastMouse.x - event.ptMouse.x;
             }
             
-            if( rc.right - rc.left > GetMinWidth() ) {
-                m_cxyFixed.cx = rc.right - rc.left;
+            if( rc.right - rc.left > GetScaledMinWidth() ) {
+                SetScaledWidth(rc.right - rc.left);
                 ptLastMouse = event.ptMouse;
                 if( GetParent() ) 
                     GetParent()->NeedParentUpdate();
@@ -1957,9 +1957,9 @@ void CListElementUI::Invalidate()
             rc.right -= rcInset.right;
             rc.bottom -= rcInset.bottom;
             CScrollBarUI* pVerticalScrollBar = pParentContainer->GetVerticalScrollBar();
-            if( pVerticalScrollBar && pVerticalScrollBar->IsVisible() ) rc.right -= pVerticalScrollBar->GetFixedWidth();
+            if( pVerticalScrollBar && pVerticalScrollBar->IsVisible() ) rc.right -= pVerticalScrollBar->GetScaledWidth();
             CScrollBarUI* pHorizontalScrollBar = pParentContainer->GetHorizontalScrollBar();
-            if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rc.bottom -= pHorizontalScrollBar->GetFixedHeight();
+            if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rc.bottom -= pHorizontalScrollBar->GetScaledHeight();
 
             RECT invalidateRc = m_rcItem;
             if( !::IntersectRect(&invalidateRc, &m_rcItem, &rc) ) 
@@ -2140,6 +2140,18 @@ void CListLabelElementUI::SetFixedHeight(int cy)
 {
     m_bNeedEstimateSize = true;
     CControlUI::SetFixedHeight(cy);
+}
+
+void CListLabelElementUI::SetScaledWidth(int cx)
+{
+    m_bNeedEstimateSize = true;
+    CControlUI::SetScaledWidth(cx);
+}
+
+void CListLabelElementUI::SetScaledHeight(int cy)
+{
+    m_bNeedEstimateSize = true;
+    CControlUI::SetScaledHeight(cy);
 }
 
 void CListLabelElementUI::SetText(LPCTSTR pstrText)
@@ -2718,9 +2730,9 @@ void CListContainerElementUI::Invalidate()
             rc.right -= rcInset.right;
             rc.bottom -= rcInset.bottom;
             CScrollBarUI* pVerticalScrollBar = pParentContainer->GetVerticalScrollBar();
-            if( pVerticalScrollBar && pVerticalScrollBar->IsVisible() ) rc.right -= pVerticalScrollBar->GetFixedWidth();
+            if( pVerticalScrollBar && pVerticalScrollBar->IsVisible() ) rc.right -= pVerticalScrollBar->GetScaledWidth();
             CScrollBarUI* pHorizontalScrollBar = pParentContainer->GetHorizontalScrollBar();
-            if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rc.bottom -= pHorizontalScrollBar->GetFixedHeight();
+            if( pHorizontalScrollBar && pHorizontalScrollBar->IsVisible() ) rc.bottom -= pHorizontalScrollBar->GetScaledHeight();
 
             RECT invalidateRc = m_rcItem;
             if( !::IntersectRect(&invalidateRc, &m_rcItem, &rc) ) 

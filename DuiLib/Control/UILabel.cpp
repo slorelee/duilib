@@ -85,6 +85,18 @@ namespace DuiLib
         CControlUI::SetFixedHeight(cy);
     }
 
+	void CLabelUI::SetScaledWidth(int cx)
+	{
+		m_bNeedEstimateSize = true;
+		CControlUI::SetScaledWidth(cx);
+	}
+
+	void CLabelUI::SetScaledHeight(int cy)
+	{
+		m_bNeedEstimateSize = true;
+		CControlUI::SetScaledHeight(cy);
+	}
+
 	void CLabelUI::SetText(LPCTSTR pstrText)
 	{
 		bool changed = m_sText != pstrText;
@@ -208,9 +220,9 @@ namespace DuiLib
 			else CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, m_iFont, style);
 		}
 		int width = rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right;
-		width = MAX(width, GetMinWidth());
-		width = MIN(width, GetMaxWidth());
-		SetFixedWidth(MAX(1, width));
+		width = MAX(width, GetScaledMinWidth());
+		width = MIN(width, GetScaledMaxWidth());
+		SetScaledWidth(MAX(1, width));
 	}
 	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
 	{

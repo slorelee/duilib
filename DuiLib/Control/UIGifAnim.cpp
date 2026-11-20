@@ -212,8 +212,8 @@ namespace DuiLib
 
 		if (m_bIsAutoSize)
 		{
-			SetFixedWidth(m_pGifImage->GetWidth());
-			SetFixedHeight(m_pGifImage->GetHeight());
+			SetScaledWidth(m_pGifImage->GetWidth());
+			SetScaledHeight(m_pGifImage->GetHeight());
 		}
 		if (m_bIsAutoPlay && nSize > 0)
 		{

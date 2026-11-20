@@ -31,6 +31,8 @@ namespace DuiLib
 
         void SetFixedWidth(int cx);
         void SetFixedHeight(int cy);
+        void SetScaledWidth(int cx);
+        void SetScaledHeight(int cy);
 		void SetText(LPCTSTR pstrText);
 
 		void SetTextStyle(UINT uStyle);

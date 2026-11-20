@@ -207,6 +207,17 @@ float CPaintManagerUI::GetDpiScale() const
     return m_nDpiScale / 1000.0f;
 }
 
+void CPaintManagerUI::MoveWindow(int dx, int dy, int dw, int dh, HWND hWndZ, UINT flags)
+{
+    HWND hwnd = GetPaintWindow();
+    if( hwnd == NULL ) return;
+    RECT rect = { 0 };
+    if( !::GetWindowRect(hwnd, &rect) ) return;
+    if( flags == UINT_MAX ) flags = SWP_NOZORDER | SWP_NOACTIVATE;
+    ::SetWindowPos(hwnd, hWndZ,
+        rect.left + ScaleDpi(dx), rect.top + ScaleDpi(dy),
+        rect.right - rect.left + ScaleDpi(dw), rect.bottom - rect.top + ScaleDpi(dh), flags);
+}
 CPaintManagerUI::~CPaintManagerUI()
 {
     // Delete the control-tree structures

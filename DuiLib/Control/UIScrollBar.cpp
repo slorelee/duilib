@@ -22,7 +22,7 @@ CScrollBarUI::CScrollBarUI() :
 	m_bShowButton1(true),
 	m_bShowButton2(true)
 {
-	m_cxyFixed.cx = DEFAULT_SCROLLBAR_SIZE;
+	SetFixedWidth(DEFAULT_SCROLLBAR_SIZE);
 	ptLastMouse.x = ptLastMouse.y = 0;
 	::ZeroMemory(&m_rcThumb, sizeof(m_rcThumb));
 	::ZeroMemory(&m_rcButton1, sizeof(m_rcButton1));
@@ -87,14 +87,14 @@ void CScrollBarUI::SetHorizontal(bool bHorizontal)
 	m_bHorizontal = bHorizontal;
 	if( m_bHorizontal ) {
 		if( m_cxyFixed.cy == 0 ) {
-			m_cxyFixed.cx = 0;
-			m_cxyFixed.cy = DEFAULT_SCROLLBAR_SIZE;
+						SetFixedWidth(0);
+						SetFixedHeight(DEFAULT_SCROLLBAR_SIZE);
 		}
 	}
 	else {
 		if( m_cxyFixed.cx == 0 ) {
-			m_cxyFixed.cx = DEFAULT_SCROLLBAR_SIZE;
-			m_cxyFixed.cy = 0;
+						SetFixedWidth(DEFAULT_SCROLLBAR_SIZE);
+						SetFixedHeight(0);
 		}
 	}
 

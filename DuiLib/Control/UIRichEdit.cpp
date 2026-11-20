@@ -2012,15 +2012,15 @@ void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
         rc.top -= m_pVerticalScrollBar->GetScrollPos();
         rc.bottom -= m_pVerticalScrollBar->GetScrollPos();
         rc.bottom += m_pVerticalScrollBar->GetScrollRange();
-        rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-        rcScrollView.right -= m_pVerticalScrollBar->GetFixedWidth();
+        rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+        rcScrollView.right -= m_pVerticalScrollBar->GetScaledWidth();
     }
     if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
         rc.left -= m_pHorizontalScrollBar->GetScrollPos();
         rc.right -= m_pHorizontalScrollBar->GetScrollPos();
         rc.right += m_pHorizontalScrollBar->GetScrollRange();
-        rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
-        rcScrollView.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+        rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
+        rcScrollView.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
     }
 
     if( m_pTwh != NULL ) {
@@ -2036,7 +2036,7 @@ void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
 		rcText.bottom -= m_rcTextPadding.bottom;
         m_pTwh->SetClientRect(&rcScrollTextView);
         if( bVScrollBarVisiable && (!m_pVerticalScrollBar->IsVisible() || m_bVScrollBarFixing) ) {
-            LONG lWidth = rcText.right - rcText.left + m_pVerticalScrollBar->GetFixedWidth();
+            LONG lWidth = rcText.right - rcText.left + m_pVerticalScrollBar->GetScaledWidth();
             LONG lHeight = 0;
             SIZEL szExtent = { -1, -1 };
             m_pTwh->GetTextServices()->TxGetNaturalSize(
@@ -2064,12 +2064,12 @@ void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
 
     if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() ) {
         RECT rcScrollBarPos = { rcScrollView.right, rcScrollView.top, 
-            rcScrollView.right + m_pVerticalScrollBar->GetFixedWidth(), rcScrollView.bottom};
+            rcScrollView.right + m_pVerticalScrollBar->GetScaledWidth(), rcScrollView.bottom};
         m_pVerticalScrollBar->SetPos(rcScrollBarPos, false);
     }
     if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
         RECT rcScrollBarPos = { rcScrollView.left, rcScrollView.bottom, rcScrollView.right, 
-            rcScrollView.bottom + m_pHorizontalScrollBar->GetFixedHeight()};
+            rcScrollView.bottom + m_pHorizontalScrollBar->GetScaledHeight()};
         m_pHorizontalScrollBar->SetPos(rcScrollBarPos, false);
     }
 
@@ -2081,10 +2081,10 @@ void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
         }
         else {
 			SIZE sz = { rc.right - rc.left, rc.bottom - rc.top };
-			if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
-			if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
-			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+			if( sz.cx < pControl->GetScaledMinWidth() ) sz.cx = pControl->GetScaledMinWidth();
+			if( sz.cx > pControl->GetScaledMaxWidth() ) sz.cx = pControl->GetScaledMaxWidth();
+			if( sz.cy < pControl->GetScaledMinHeight() ) sz.cy = pControl->GetScaledMinHeight();
+			if( sz.cy > pControl->GetScaledMaxHeight() ) sz.cy = pControl->GetScaledMaxHeight();
 			RECT rcCtrl = { rc.left, rc.top, rc.left + sz.cx, rc.top + sz.cy };
 			pControl->SetPos(rcCtrl, false);
 		}
@@ -2101,8 +2101,8 @@ void CRichEditUI::Move(SIZE szOffset, bool bNeedInvalidate)
 		rc.right -= m_rcInset.right;
 		rc.bottom -= m_rcInset.bottom;
 
-		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 		m_pTwh->SetClientRect(&rc);
 	}
 }
@@ -2135,7 +2135,7 @@ bool CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
             NULL,					// Call back parameter
             0);				        // What view of the object
         if( m_bVScrollBarFixing ) {
-            LONG lWidth = rc.right - rc.left + m_pVerticalScrollBar->GetFixedWidth();
+            LONG lWidth = rc.right - rc.left + m_pVerticalScrollBar->GetScaledWidth();
             LONG lHeight = 0;
             SIZEL szExtent = { -1, -1 };
             m_pTwh->GetTextServices()->TxGetNaturalSize(
@@ -2159,8 +2159,8 @@ bool CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
         rc.top += m_rcInset.top;
         rc.right -= m_rcInset.right;
         rc.bottom -= m_rcInset.bottom;
-        if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-        if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+        if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+        if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 
         if( !::IntersectRect(&rcTemp, &rcPaint, &rc) ) {
             for( int it = 0; it < m_items.GetSize(); it++ ) {

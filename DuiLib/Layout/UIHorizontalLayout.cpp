@@ -36,8 +36,8 @@ namespace DuiLib
 		rc.top += m_rcInset.top;
 		rc.right -= m_rcInset.right;
 		rc.bottom -= m_rcInset.bottom;
-		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
-		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetScaledWidth();
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetScaledHeight();
 
 		if( m_items.GetSize() == 0) {
 			ProcessScrollBar(rc, 0, 0);
@@ -65,16 +65,16 @@ namespace DuiLib
 			szControlAvailable = szAvailable;
 			RECT rcPadding = pControl->GetPadding();
 			szControlAvailable.cy -= rcPadding.top + rcPadding.bottom;
-			iControlMaxWidth = pControl->GetFixedWidth();
-			iControlMaxHeight = pControl->GetFixedHeight();
-			if (iControlMaxWidth <= 0) iControlMaxWidth = pControl->GetMaxWidth(); 
-			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
+			iControlMaxWidth = pControl->GetScaledWidth();
+			iControlMaxHeight = pControl->GetScaledHeight();
+			if (iControlMaxWidth <= 0) iControlMaxWidth = pControl->GetScaledMaxWidth();
+			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetScaledMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
 			SIZE sz = { 0 };
-			if (pControl->GetFixedWidth() == 0) {
+			if (pControl->GetScaledWidth() == 0) {
 				nAdjustables++;
-				sz.cy = pControl->GetFixedHeight();
+				sz.cy = pControl->GetScaledHeight();
 			}
 			else {
 				sz = pControl->EstimateSize(szControlAvailable);
@@ -82,16 +82,16 @@ namespace DuiLib
 					nAdjustables++;
 				}
 				else {
-					if (sz.cx < pControl->GetMinWidth()) sz.cx = pControl->GetMinWidth();
-					if (sz.cx > pControl->GetMaxWidth()) sz.cx = pControl->GetMaxWidth();
+					if (sz.cx < pControl->GetScaledMinWidth()) sz.cx = pControl->GetScaledMinWidth();
+					if (sz.cx > pControl->GetScaledMaxWidth()) sz.cx = pControl->GetScaledMaxWidth();
 				}
 			}
 
 			cxFixed += sz.cx + pControl->GetPadding().left + pControl->GetPadding().right;
 
 			sz.cy = MAX(sz.cy, 0);
-			if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
-			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+			if( sz.cy < pControl->GetScaledMinHeight() ) sz.cy = pControl->GetScaledMinHeight();
+			if( sz.cy > pControl->GetScaledMaxHeight() ) sz.cy = pControl->GetScaledMaxHeight();
 			cyNeeded = MAX(cyNeeded, sz.cy + rcPadding.top + rcPadding.bottom);
 			nEstimateNum++;
 		}
@@ -124,36 +124,36 @@ namespace DuiLib
 
 			szControlAvailable = szRemaining;
 			szControlAvailable.cy -= rcPadding.top + rcPadding.bottom;
-			iControlMaxWidth = pControl->GetFixedWidth();
-			iControlMaxHeight = pControl->GetFixedHeight();
-			if (iControlMaxWidth <= 0) iControlMaxWidth = pControl->GetMaxWidth(); 
-			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
+			iControlMaxWidth = pControl->GetScaledWidth();
+			iControlMaxHeight = pControl->GetScaledHeight();
+			if (iControlMaxWidth <= 0) iControlMaxWidth = pControl->GetScaledMaxWidth();
+			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetScaledMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
       cxFixedRemaining = cxFixedRemaining - (rcPadding.left + rcPadding.right);
 			if (iEstimate > 1) cxFixedRemaining = cxFixedRemaining - m_iChildPadding;
 			SIZE sz = pControl->EstimateSize(szControlAvailable);
-			if (pControl->GetFixedWidth() == 0 || sz.cx == 0) {
+			if (pControl->GetScaledWidth() == 0 || sz.cx == 0) {
 				iAdjustable++;
 				sz.cx = cxExpand;
 				// Distribute remaining to last element (usually round-off left-overs)
 				if( iAdjustable == nAdjustables ) {
 					sz.cx = MAX(0, szRemaining.cx - rcPadding.right - cxFixedRemaining);
 				} 
-				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+				if( sz.cx < pControl->GetScaledMinWidth() ) sz.cx = pControl->GetScaledMinWidth();
+				if( sz.cx > pControl->GetScaledMaxWidth() ) sz.cx = pControl->GetScaledMaxWidth();
 			}
 			else {
-				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+				if( sz.cx < pControl->GetScaledMinWidth() ) sz.cx = pControl->GetScaledMinWidth();
+				if( sz.cx > pControl->GetScaledMaxWidth() ) sz.cx = pControl->GetScaledMaxWidth();
 				cxFixedRemaining -= sz.cx;
 			}
 
-			sz.cy = pControl->GetMaxHeight();
+			sz.cy = pControl->GetScaledMaxHeight();
 			if( sz.cy == 0 ) sz.cy = szAvailable.cy - rcPadding.top - rcPadding.bottom;
 			if( sz.cy < 0 ) sz.cy = 0;
 			if( sz.cy > szControlAvailable.cy ) sz.cy = szControlAvailable.cy;
-			if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
+			if( sz.cy < pControl->GetScaledMinHeight() ) sz.cy = pControl->GetScaledMinHeight();
 
 			UINT iChildAlign = GetChildVAlign(); 
 			if (iChildAlign == DT_VCENTER) {
@@ -267,32 +267,32 @@ namespace DuiLib
 						if( cx > 0 && event.ptMouse.x < m_rcNewPos.right - m_iSepWidth ) return;
 						if( cx < 0 && event.ptMouse.x > m_rcNewPos.right ) return;
 						rc.right += cx;
-						if( rc.right - rc.left <= GetMinWidth() ) {
-							if( m_rcNewPos.right - m_rcNewPos.left <= GetMinWidth() ) return;
-							rc.right = rc.left + GetMinWidth();
+						if( rc.right - rc.left <= GetScaledMinWidth() ) {
+							if( m_rcNewPos.right - m_rcNewPos.left <= GetScaledMinWidth() ) return;
+							rc.right = rc.left + GetScaledMinWidth();
 						}
-						if( rc.right - rc.left >= GetMaxWidth() ) {
-							if( m_rcNewPos.right - m_rcNewPos.left >= GetMaxWidth() ) return;
-							rc.right = rc.left + GetMaxWidth();
+						if( rc.right - rc.left >= GetScaledMaxWidth() ) {
+							if( m_rcNewPos.right - m_rcNewPos.left >= GetScaledMaxWidth() ) return;
+							rc.right = rc.left + GetScaledMaxWidth();
 						}
 					}
 					else {
 						if( cx > 0 && event.ptMouse.x < m_rcNewPos.left ) return;
 						if( cx < 0 && event.ptMouse.x > m_rcNewPos.left - m_iSepWidth ) return;
 						rc.left += cx;
-						if( rc.right - rc.left <= GetMinWidth() ) {
-							if( m_rcNewPos.right - m_rcNewPos.left <= GetMinWidth() ) return;
-							rc.left = rc.right - GetMinWidth();
+						if( rc.right - rc.left <= GetScaledMinWidth() ) {
+							if( m_rcNewPos.right - m_rcNewPos.left <= GetScaledMinWidth() ) return;
+							rc.left = rc.right - GetScaledMinWidth();
 						}
-						if( rc.right - rc.left >= GetMaxWidth() ) {
-							if( m_rcNewPos.right - m_rcNewPos.left >= GetMaxWidth() ) return;
-							rc.left = rc.right - GetMaxWidth();
+						if( rc.right - rc.left >= GetScaledMaxWidth() ) {
+							if( m_rcNewPos.right - m_rcNewPos.left >= GetScaledMaxWidth() ) return;
+							rc.left = rc.right - GetScaledMaxWidth();
 						}
 					}
 
 					CDuiRect rcInvalidate = GetThumbRect(true);
 					m_rcNewPos = rc;
-					m_cxyFixed.cx = m_rcNewPos.right - m_rcNewPos.left;
+					SetScaledWidth(m_rcNewPos.right - m_rcNewPos.left);
 
 					if( m_bImmMode ) {
 						m_rcItem = m_rcNewPos;

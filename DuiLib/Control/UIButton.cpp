@@ -310,8 +310,8 @@ namespace DuiLib
 			LONG height = m_diNormal.pImageInfo->nY;
 			m_diNormal.rcBmpPart = CDuiRect(0, 0, width, height);
 			if( m_bFloat && m_cxyFixed.cx == 0 && m_cxyFixed.cy == 0 ) {
-				m_cxyFixed.cx = width;
-				m_cxyFixed.cy = height;
+				SetScaledWidth(width);
+				SetScaledHeight(height);
 			}
 		}
 

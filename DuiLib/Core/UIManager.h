@@ -201,6 +201,8 @@ public:
     void SetDpiScale(float scale);
     int ScaleDpi(int value) const;
     float GetDpiScale() const;
+    // Logical pixel deltas; converted to physical pixels by this manager.
+    void MoveWindow(int dx, int dy, int dw = 0, int dh = 0, HWND hWndZ = NULL, UINT flags = UINT_MAX);
     bool GetKeepRes();
     void SetKeepRes(bool bKeep);
 	bool IsUpdateNeeded() const;
